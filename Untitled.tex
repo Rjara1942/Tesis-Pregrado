@@ -1,0 +1,162 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Informe Preliminar de Estimación de Precios Ex-Vessel},
+  pdfauthor={Tesis Pesquería Pelágica},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Informe Preliminar de Estimación de Precios Ex-Vessel}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Evidencia de Rigidez de Oferta y Endogeneidad en la Zona
+Centro-Sur}
+\author{Tesis Pesquería Pelágica}
+\date{2026-01-07}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+El objetivo es verificar empíricamente la existencia de rigidez de
+oferta y problemas de endogeneidad que justifiquen el uso del modelo
+IAIDS.
+
+Se procesaron las bases de datos de desembarque mensuales (2011-2024)
+para tres flotas (Botes, Lanchas, Industrial). Se aplicaron los
+siguientes filtros para definir el Mercado Relevante: Se consideraron
+exclusivamente los desembarques y precios de las regiones V, VI, VII,
+VIII, IX, XIV, X y XVI y se utilizaron únicamente precios de materia
+prima con destino a Harina (``ANIMAL'').
+
+Se estimó la elasticidad precio-cantidad (ϵ) mediante Mínimos Cuadrados
+Ordinarios (OLS) para cada segmento de flota.
+
+\begin{longtable}[t]{llrrrr}
+\caption{\label{tab:unnamed-chunk-2}Estimación Desagregada por Flota}\\
+\toprule
+Origen\_Flota & Origen\_Especie & Obs & Flexibilidad & P\_Valor & R2\\
+\midrule
+\cellcolor{gray!10}{Botes} & \cellcolor{gray!10}{Anchoveta} & \cellcolor{gray!10}{69} & \cellcolor{gray!10}{0.0048} & \cellcolor{gray!10}{0.8855} & \cellcolor{gray!10}{0.000}\\
+Botes & Jurel & 29 & 0.0431 & 0.5904 & 0.011\\
+\cellcolor{gray!10}{Botes} & \cellcolor{gray!10}{Sardina} & \cellcolor{gray!10}{98} & \cellcolor{gray!10}{-0.0130} & \cellcolor{gray!10}{0.6485} & \cellcolor{gray!10}{0.002}\\
+Industrial & Anchoveta & 51 & -0.0496 & 0.4820 & 0.010\\
+\cellcolor{gray!10}{Industrial} & \cellcolor{gray!10}{Jurel} & \cellcolor{gray!10}{32} & \cellcolor{gray!10}{0.0665} & \cellcolor{gray!10}{0.1136} & \cellcolor{gray!10}{0.081}\\
+\addlinespace
+Industrial & Sardina & 61 & -0.0777 & 0.0444 & 0.067\\
+\cellcolor{gray!10}{Lanchas} & \cellcolor{gray!10}{Anchoveta} & \cellcolor{gray!10}{91} & \cellcolor{gray!10}{-0.0207} & \cellcolor{gray!10}{0.5044} & \cellcolor{gray!10}{0.005}\\
+Lanchas & Jurel & 30 & 0.0850 & 0.0270 & 0.163\\
+\cellcolor{gray!10}{Lanchas} & \cellcolor{gray!10}{Sardina} & \cellcolor{gray!10}{101} & \cellcolor{gray!10}{-0.0178} & \cellcolor{gray!10}{0.5439} & \cellcolor{gray!10}{0.004}\\
+\bottomrule
+\end{longtable}
+
+Debido a que el mercado de harina es integrado, se realizó una
+estimación agregando la oferta total
+
+\begin{longtable}[t]{lrrrr}
+\caption{\label{tab:unnamed-chunk-3}Estimación Agregada (Mercado Total)}\\
+\toprule
+Origen\_Especie & Obs & Flexibilidad & P\_Valor & R2\\
+\midrule
+\cellcolor{gray!10}{Anchoveta} & \cellcolor{gray!10}{91} & \cellcolor{gray!10}{-0.0315} & \cellcolor{gray!10}{0.3882} & \cellcolor{gray!10}{0.008}\\
+Jurel & 32 & 0.0907 & 0.0801 & 0.099\\
+\cellcolor{gray!10}{Sardina} & \cellcolor{gray!10}{101} & \cellcolor{gray!10}{-0.0104} & \cellcolor{gray!10}{0.7478} & \cellcolor{gray!10}{0.001}\\
+\bottomrule
+\end{longtable}
+
+Discusión de Resultados
+
+La Tabla 2 revela fallas estructurales en el modelo OLS simple que
+validan la hipótesis central de la tesis:
+
+Jurel (+r
+res\_agg\(Flexibilidad[res_agg\)Origen\_Especie==``Jurel''{]}): El
+coeficiente es positivo y significativo al 10\% (p=r
+res\_agg\(P_Valor[res_agg\)Origen\_Especie==``Jurel''{]}). Esto viola la
+ley de demanda y evidencia simultaneidad: la demanda internacional
+impulsa tanto el precio como la captura, generando un sesgo positivo que
+OLS no puede corregir.
+
+Sardina (-0.01): La pérdida de significancia en el modelo agregado
+sugiere un sesgo de atenuación por endogeneidad.
+
+\end{document}

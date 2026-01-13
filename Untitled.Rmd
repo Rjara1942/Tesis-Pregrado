@@ -1,0 +1,175 @@
+---
+title: "Informe Preliminar de Estimación de Precios Ex-Vessel"
+subtitle: "Evidencia de Rigidez de Oferta y Endogeneidad en la Zona Centro-Sur"
+author: "Tesis Pesquería Pelágica"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    number_sections: true
+    toc: true
+---
+```{r setup, include=FALSE}
+# Configuración global: Ocultar código y advertencias en el PDF final
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+# Librerías
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+
+# RUTA DE TRABAJO (Ajustada a tu configuración)
+setwd("~/Library/Mobile Documents/com~apple~CloudDocs/tesis_datos")
+```
+
+El objetivo es verificar empíricamente la existencia de rigidez de oferta y problemas de endogeneidad que justifiquen el uso del modelo IAIDS.
+
+Se procesaron las bases de datos de desembarque mensuales (2011-2024) para tres flotas (Botes, Lanchas, Industrial). Se aplicaron los siguientes filtros para definir el Mercado Relevante:
+Se consideraron exclusivamente los desembarques y precios de las regiones V, VI, VII, VIII, IX, XIV, X y XVI y se utilizaron únicamente precios de materia prima con destino a Harina ("ANIMAL").
+
+```{r}
+# --- 1. FUNCIÓN DE CARGA ---
+cargar_base <- function(archivo, flota, especie) {
+  if(file.exists(archivo)) {
+    df <- suppressMessages(read_excel(archivo, skip = 1))
+    df$Origen_Flota <- flota
+    df$Origen_Especie <- especie
+    return(df)
+  } else { return(NULL) }
+}
+
+# --- 2. CARGA DE ARCHIVOS ---
+archivos <- list(
+  c("botes_anchoveta.xlsx", "Botes", "Anchoveta"),
+  c("botes_sardina.xlsx", "Botes", "Sardina"),
+  c("botes_jurel.xlsx", "Botes", "Jurel"),
+  c("lanchas_anchoveta.xlsx", "Lanchas", "Anchoveta"),
+  c("lanchas_sardina.xlsx", "Lanchas", "Sardina"),
+  c("lanchas_jurel.xlsx", "Lanchas", "Jurel"),
+  c("industrial_anchoveta.xlsx", "Industrial", "Anchoveta"),
+  c("industrial_sardina.xlsx", "Industrial", "Sardina"),
+  c("industrial_jurel.xlsx", "Industrial", "Jurel")
+)
+
+lista_dfs <- list()
+for(x in archivos) {
+  res <- cargar_base(x[1], x[2], x[3])
+  if(!is.null(res)) lista_dfs[[length(lista_dfs)+1]] <- res
+}
+df_raw <- bind_rows(lista_dfs)
+
+# --- 3. LIMPIEZA Y FILTRADO CENTRO-SUR ---
+cols_region <- c("5", "6", "7", "8", "9", "14", "10", "16")
+
+df_limpio <- df_raw %>%
+  rename(ANIO = `Años (Fc_Llegada)`, MES = `Meses (Fc_Llegada)`) %>%
+  filter(!is.na(ANIO)) %>%
+  # Convertir regiones a numérico y sumar
+  mutate(across(any_of(cols_region), ~suppressWarnings(as.numeric(.)))) %>%
+  mutate(Q_CentroSur = rowSums(select(., any_of(cols_region)), na.rm = TRUE)) %>%
+  # Limpieza de fechas
+  mutate(
+    ANIO = as.numeric(ANIO),
+    MES_STR = tolower(trimws(MES)),
+    MES_NUM = case_when(
+      grepl("ene|jan|1", MES_STR) & !grepl("10|11|12", MES_STR) ~ 1,
+      grepl("feb|2", MES_STR) ~ 2,
+      grepl("mar|3", MES_STR) ~ 3,
+      grepl("abr|apr|4", MES_STR) ~ 4,
+      grepl("may|5", MES_STR) ~ 5,
+      grepl("jun|6", MES_STR) ~ 6,
+      grepl("jul|7", MES_STR) ~ 7,
+      grepl("ago|aug|8", MES_STR) ~ 8,
+      grepl("sep|9", MES_STR) ~ 9,
+      grepl("oct|10", MES_STR) ~ 10,
+      grepl("nov|11", MES_STR) ~ 11,
+      grepl("dic|dec|12", MES_STR) ~ 12,
+      TRUE ~ NA_real_
+    )
+  ) %>%
+  select(ANIO, MES_NUM, Origen_Flota, Origen_Especie, Q = Q_CentroSur) %>%
+  filter(!is.na(MES_NUM), Q > 0)
+
+# --- 4. CRUCE CON PRECIOS (FILTRO DOBLE) ---
+if(file.exists("precio_SPF.xlsx")) {
+  df_precios_raw <- suppressMessages(read_excel("precio_SPF.xlsx"))
+  
+  df_precios_clean <- df_precios_raw %>%
+    filter(CLASE_INDUSTRIA_II == "ANIMAL") %>%
+    # Filtro Regional en Precios (Números 5, 8, etc)
+    filter(RG %in% c(5, 6, 7, 8, 9, 14, 10, 16)) %>%
+    mutate(
+      ANIO = as.numeric(ANIO),
+      MES_NUM = as.numeric(MES),
+      Especie_Join = case_when(
+        grepl("SARDINA", toupper(NM_RECURSO)) ~ "Sardina",
+        grepl("ANCHOVETA", toupper(NM_RECURSO)) ~ "Anchoveta",
+        grepl("JUREL", toupper(NM_RECURSO)) ~ "Jurel",
+        TRUE ~ NA_character_
+      )
+    ) %>%
+    filter(!is.na(Especie_Join)) %>%
+    group_by(ANIO, MES_NUM, Especie_Join) %>%
+    summarise(P = mean(as.numeric(PRECIO), na.rm = TRUE), .groups = "drop")
+  
+  # Unión Final (YO DEJARIA LEFT JOIN OARA TEBNER TODOS LOS Q, Y PRECIOS CON NA)
+  df_final <- inner_join(df_limpio, df_precios_clean, 
+                         by = c("ANIO", "MES_NUM", "Origen_Especie" = "Especie_Join"))
+}
+```
+
+Se estimó la elasticidad precio-cantidad (ϵ) mediante Mínimos Cuadrados Ordinarios (OLS) para cada segmento de flota.
+
+```{r}
+res_flota <- df_final %>%
+  group_by(Origen_Flota, Origen_Especie) %>%
+  filter(n() > 10) %>%
+  summarise(
+    Obs = n(),
+    Flexibilidad = round(coef(lm(log(P) ~ log(Q + 1)))[2], 4),
+    P_Valor = round(summary(lm(log(P) ~ log(Q + 1)))$coefficients[2, 4], 4),
+    R2 = round(summary(lm(log(P) ~ log(Q + 1)))$r.squared, 3),
+    .groups = "drop"
+  )
+
+kable(res_flota, caption = "Estimación Desagregada por Flota", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+
+```
+
+Debido a que el mercado de harina es integrado, se realizó una estimación agregando la oferta total 
+
+```{r}
+# Agregación
+df_agg <- df_final %>%
+  group_by(ANIO, MES_NUM, Origen_Especie) %>%
+  summarise(
+    Q_Total = sum(Q, na.rm = TRUE),
+    P_Promedio = mean(P, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Regresión
+res_agg <- df_agg %>%
+  group_by(Origen_Especie) %>%
+  summarise(
+    Obs = n(),
+    Flexibilidad = round(coef(lm(log(P_Promedio) ~ log(Q_Total + 1)))[2], 4),
+    P_Valor = round(summary(lm(log(P_Promedio) ~ log(Q_Total + 1)))$coefficients[2, 4], 4),
+    R2 = round(summary(lm(log(P_Promedio) ~ log(Q_Total + 1)))$r.squared, 3)
+  )
+
+kable(res_agg, caption = "Estimación Agregada (Mercado Total)", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+
+```
+
+A partir de la Tabla 2, se observan dos factores críticos que justifican la metodología propuesta en la tesis:
+
+Evidencia de Endogeneidad en Jurel: El coeficiente positivo  es teóricamente inconsistente con una curva de demanda. Esto indica que el precio no responde a la abundancia local, sino que la captura responde a incentivos de precios externos (simultaneidad), lo que sesga el estimador OLS.
+
+Sesgo en Sardina y Anchoveta: La baja significancia y magnitud cercana a cero sugieren un sesgo  por simultaneidad, donde los shocks de oferta y demanda se contrarrestan.
+
