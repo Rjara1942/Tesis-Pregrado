@@ -1,0 +1,56 @@
+---
+title: "Formación de Precios Ex-Vessel bajo Rigidez de Oferta"
+subtitle: "Una estimación IAIDS para la Pesquería Pelágica de la Zona Centro-Sur de Chile"
+author: "Ricardo Jara Valencia"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    citation_package: biblatex
+bibliography: bibliografia.bib
+biblio-style: apa
+link-citations: true
+---
+
+```{r setup, include=FALSE}
+# Configuración: echo=FALSE oculta el código en el PDF final
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(knitr)
+```
+
+# Introducción
+
+1.1 Contexto
+
+La pesquería chilena de especies pelágicas menores *(Small Pelagic Fishery, SPF)*, constituye uno de los sistemas económicos y ecológicos más dinámicos del país, no solo por su aporte a la industria de harina y aceite de pescado, sino también por su estrecha dependecnia de procesos biológicoa y ambientales que condicionan la disponibilidad del recurso en el corto plazo [@dresdner2014; @penatorres2017]. En este territorio convergen las capturas de anchoveta *(Engraulis ringes)*, sardina común *(Strangomera bentincki) y* jurel *(Tranchurus murphyi),* especies cuya abudancia está sujeta a oscilaciones climmáticas y ciclos poblaciones que modifican la estructura de la oferta dde un mes a otro [@alheit2004; @yanez2014]. Esta característica distingue a la SPF de otros mercados primarios, dado que los volúmenes transados no reflejan decisiones productivas de los agentes, sino restricciones biológicas, climaticas y regulatorias que predeterminan la oferta disponible.
+
+Este rasgo implica que, en el corto plazo, la función de ajuste recae en el precio, el cual debe equilibrar las cantidades que llegan a puerto con la demanda de la industria reductura. Tal mecanismo corresponde a la estructura de demanda inversa para bienes perecibles [@barten1989; @eales1994], donde los precios se ajustan ante shocks de disponibilidad y no al revés. En la SPF, además, la configuración multiespecie amplifica este fenómeno, cambios en la disponibilidad relativa de anchoveta, sardina y jurel no solo modifican la cantidad total capturada, sino también la mezcla industrial con la que operan la splantas, generando variaciones adicionales en el precio *ex-vessel.*
+
+El sistema opera, asismismo, bajo una lógica de demanda derivada [@clark2010], ya que la captura no se destina al consumo final sino como insumo para la industria de harina y aceite de pescado, cuyos valores se determinan en los mercados internacionales (@upton2013; @tai2017) Como consecuencia, el precio *ex-vessel* tiende a alinearse en el largo plazo con el precio internacional de la harina de pescado *Free On Board* (FOB). Sin embargo, distintas investigaciones muestran que dicha transmisión no es perfecta, ni instantánea (@dresdner2014; @penatorres2017), debido a que la señal global interactúa con condiciones locales de disponibilidad y capacidad de procesamiento. Esta interacción genera episodios de desacople temporal en los cuales los shocks de abastecimiento regional desplazan el precio doméstico antes de que este converja hacia la referencia internacional (@urbina2020; @pincinato2020).
+
+En los últimos años, la varibilidad climática ha intesificado estas fricciones. Eventos como el El Niño Oscilación del Sur (ENSO) y las anomalías de la Temperatura Superficial del Mar (TSM) alteran la localización y accesibilidad de los cardúmenes, afectando la disponibilidad inmediata del recurso [@cubillos2001; @cahuin2009]. A escala global, el calentamiento oceánico ha reducido la productividad de múltiples poblaciones marinas y ha incrementado la volatilidad del precio de los pequeños pelágicos (@free2019; @pincinato2020; Asche&Oglend), lo que subraya la importancia de incorporar shocks ambientales en los modelos de formación de precios. En pesquerías multiespecie, además, decisiones intraestacionales pueden amplificar o amortiguar estas variaciones, como muestran Birkenbach et al. (@birkenbach2020), reforzando la necesidad de enfoques estructurales capaces de capturar mecanismos simultáneos entre disponibilidad, mezcla de especies y precios.
+
+Pese a esta complejidad, la evidencia empírica para Chile continúa apoyándose en modelos reducidos que que asumen que el precio internacional opera como un determiante externo plenamente exógeno y que los precios locales se ajustan de manera pasiva a dicha señal (@tveteras2011; @upton2013). Sin embargo, este supuesto puede resultar restrictivo en contextos como la Macrozona Centro-Sur, donde la magnitud de la actividad pesquera y las variaciones abruptas en los desembarques generan dinámicas de ajuste que no se reflejan inmediatamente en los mercado internacional(@urbina2020). En estas condiciones, la trayectoria del precio *ex-vessel* puede presentar desalineaciones temporales respecto del precio internacional, no porque Chile determine directamente el valor del FOB, sino porque ambos precios responden con distinta velocidad y a diferentes conjuntos de factores. Ignorar esta dinámica de ajuste diferencial puede inducir simultaneidad entre la oferta local y precio internacional observado, afectando la consistencia de las estimaciones y dificultando la identificación separada de los mecanismos dométiscos en internacionales que intervienen en la formación del precio *ex-vessel* (@barten1989; @gordon2015).
+
+Frente a esta brecha, esta investigación propone un enfoque estructural basado en el *Inverse Almost Ideal Demand System* (IAIDS), estimado mediante Mínimos Cuadrados en Tres Etapas (MC3E) e instrumentando con variables climáticas, regulatorias y de costos operativos. Este enfoque permite identificar causalmente cómo la oferta disponible condiciona la formación del precio local, distinguir el componente doméstico del componente externo del precio y evaluar la magnitud de la transmisión internacional. \#*La estrategía secuencial de estimar el sistema con y sin el precio FOB permite, además, contrastar explícitmente el grado de integración del mercado local con el mercado global de la harina de pescado*\# (mejor, mover a metodoología)
+
+Lo anterior permite abordar la pregunta central de la invesrtrigación:
+
+¿En qué medida las variaciones en la oferta disponible determinan la formación del precio *ex-vessel* en la pesquería pelágica de la zona centro-sur, y bajo qué condicones se separa temporalmente del precio internacional?
+
+1.2 Hipótesis
+
+Se plantea que la pesquería pelágica de la zona centro-sur, que la formación del precio *ex-vessel* en el corto plazo está determinada principalmente por la oferta disponible, la cual está condicionada por factores biológicos y regulatorios que limitan el ajuste de la flota. Bajo esta estrcutura oferta casi inelástica, las variaciones en la magnitud y composición multiespecie generan ajustes inmediatos en el precio local, operando como mecanismo central en el equilibrio de mercado. Aunque el precio internacional actúa como referencia de largo plazo, su transmisión hacia el mercado local no es inmediata, sino que ocurre con ciertos rezagos y ajustes incompletos. Esto genera períodos en los que el precio *ex-vessel* no sigue exactamente al precio internacional. Como consecuencia, se espera que parte del precio pagado en el muelle este determiando principalmente por la disponibilidad del recurso, aún cuando existe integración al mercado internacional.
+
+Lo antreior será evaluado mediante un efnoque econométrico estructural de demanda de demanda inversa (IAIDS), permitiendo identificar el efecto causal de las variaciones en la oferta sobre el precio. Lo que permitirá distinguir entre el componente asociado a la formación de precio local del componente asociado a la transmisión internacional. Para ello se implementará una estrategía de estimación en dos etapas, primero un modelo IAIDS sin precio internacional y posteriormente, un modelo ampliado que incorpora el el precio internacional como determinante adicional. La comparación entre ambas etapas permite contrastar empíricamente la dinámica del precio \*ex-vessel\* si refleja un ajuste predominamente local y si se observan desviaciones temporales respecto al precio internacional /# corregir la simultaneidad entre cantidades desembarcadas y shocks externos que puedan afectar la oferta, lo que garantiza que la identificación del mecanismo causal responda efectivamente a variaciones exógenas en la disponibilidad del recurso./#
+
+1.3 Objetivos
+
+El obejtivo principal de la investigación es analizar la formación del precio \*ex-vessel\* en la SPF de la zona macro centro sur, identificando la contribución relativa de la oferta local y del precio internacioanl en la determinación del precio de corto plazo mediante un sistema de demanda inversa instrumentado.
+
+Asimismo se desprender tres objetivos específicos
+
+1.  Caracteririzar la evolución historica de la oferta efectiva, evaluando cómo las variaciones tanto biologicas, regulatorias y ambientales determinan la disponibilidad mensual de anchoveta, sardina común y jurel.
+
+2.  Estimar las elasticidades de precios tanto propias como cruzadas, con el fin de aislar el efecto causal y la magnitud la composición multiespecie de los desembarques sobre el precio.
+
+3.  Evaluar el grado de transmisón pass-through
