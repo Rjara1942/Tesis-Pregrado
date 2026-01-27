@@ -136,3 +136,61 @@ saveRDS(df_final_lista, "B_Q_P_IFOP_156_Final.rds")
 print(paste("Total Observaciones:", nrow(df_final_lista)))
 print(paste("Total NAs restantes:", sum(is.na(df_final_lista[, c("P_anchoveta","P_sardina","P_jurel")]))))
 
+#---------------------------------------------------------------------
+# Imputación de datos faltantes en precios PT.2
+#---------------------------------------------------------------------
+# Kalman proyecta la caida de los precios en linea recta dejando precios negativos
+# Para evitar lo anterior transformar   LnP e imputar los NA sobre el logaritmo
+# trasnformar con exponencial
+
+# Así tener siempre tener número positiva
+# Log -> Imputar -> exponencial
+
+# definir función
+
+kalman <- function(x) {
+  log_x <- log(x)
+  log_x_imp <- na_kalman(ts(log_x, frequency = 12), model = "StructTS")
+  return(as.numeric(exp(log_x_imp)))
+}
+
+base_imp <- Q_P_IFO_correg %>%
+  mutate(
+    P_anchoveta = kalman(P_anchoveta),
+    P_sardina = kalman(P_sardina_comun),
+    P_jurel = kalman(P_jurel)
+  ) %>%
+  rename(Q_sardina = Q_sardina_comun)
+
+# remover outliers y valores extremos
+
+winsorizar_manual <- function(x, p=0.95) {
+  limite <- quantile(x, probs = p, na.rm = TRUE)
+  return(pmin(x, limite))
+}
+
+Q_P_FINAL <- base_imp %>%
+  mutate(
+    P_anchoveta = winsorizar_manual(P_anchoveta),
+    P_sardina = winsorizar_manual(P_sardina),
+    P_jurel = winsorizar_manual(P_jurel)
+  )
+
+# Verificación 
+print(paste("Precios Negativos Restantes:", sum(Q_P_FINAL$P_sardina < 0)))
+print(paste("Total Observaciones:", nrow(Q_P_FINAL)))
+print(paste("Total NAs restantes:", sum(is.na(Q_P_FINAL[, c("P_anchoveta","P_sardina","P_jurel")]))))
+
+
+
+df_final_lista <- Q_P_FINAL %>%
+  select(-any_of("P_sardina_comun")) 
+
+# Verificamos que solo quede la columna "P_sardina" limpia
+print(colnames(df_final_lista))
+
+saveRDS(df_final_lista, "Q_P_156.rds")      
+write_csv(df_final_lista, "Q_P_156.csv")     
+      
+      
+      
