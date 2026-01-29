@@ -3,48 +3,48 @@ head(datos_ambientales)
 
 library(dplyr)
 library(lubridate)
+library(tidyverse)
 
-# Transformación mensual
+mapa_regiones <- tibble(
+  Puerto = c(
+    "San Antonio",
+    "Talcahuano (San Vicente)",
+    "Coronel",
+    "Calbuco",
+    "Lota",
+    "Corral",
+    "Puerto Montt",
+    "Region 7 (puerto)", 
+    "Region 9 (puerto)"
+  ),
+  Region_Num = c(5, 8, 8, 10, 8, 14, 10, 7, 9)
+)
 
-df_instrumento <- datos_ambientales %>%
-  # Crear columnas años y mes
+regional <- datos_ambientales %>%
+  left_join(mapa_regiones, by = "Puerto") %>%
+  filter(!is.na(Region_Num)) %>%
   mutate(
-    ANIO = year(date),
-    MES = month(date)
+    date = ymd(date),
+    year = year(date),
+    month = month(date)
   ) %>%
-  # sacar promedios mensuales
-  # todos los días del mes y todos los puertos de la zona
-  
-  group_by(ANIO, MES) %>%
-  # VARIABLES ESTRATEGICAS // afectan la disponibilidad SPF
-  
+  group_by(Region_Num, year, month) %>%
   summarise(
-    #SST costera (0-30km) para sardina y anchoveta que viven 
-    # más pegadas a la costa
-    SST_Costa = mean(sst_0_30km, na.rm = TRUE),
+    SST_REGIONAL = mean(sst_0_60km, na.rm = TRUE),
+    Chl_Regional = mean(chl_0_60km, na.rm = TRUE),
+    Wind_Regional = mean(speed_mean_0_60km, na.rm = TRUE),
     
-    # SST Oceánica (0-90km) para Jurel que se mueve más lejos
-    SST_Oceano = mean(sst_0_90km, na.mr = TRUE),
-    
-    #Clorofila (0-90km) Alimento en la zona de surgencia
-    Clorofila = mean(chl_0_30km, na.mr = TRUE),
-    
-    # Variable de cierre// afecta la salida de embarcaciones
-    
-    # viento (0-30k) viento pegado a la costa
-    # cierra la bahía e impide que la flota salga
-    viento_velocidad = mean(speed_mean_0_30km, na.rm = TRUE),
-    
+   
+    Wind_max = mean(speed_max_0_60km, na.rm = TRUE),
+   
     .groups = "drop"
   )
 
-print(head(df_instrumento))
+col_reg <- regional%>%
+  pivot_wider(
+    names_from = Region_Num,
+    values_from = c(SST_REGIONAL, Chl_Regional, Wind_Regional, Wind_max),
+    names_prefix = "Reg"
+  )
 
-write.csv(df_instrumento, "variables_instrumentales_v1.csv")
-
-#------------------------------
-# PANEL MENSUAL
-datos_mensual <- datos_ambientales %>%
-  mutate(month = floor_date(date, "month")) %>%
-  group_by(Puerto, month) %>%
-  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+write_csv(col_reg, "env_var_por_region.csv")
