@@ -1,0 +1,91 @@
+
+systemfit results 
+method: 3SLS 
+
+         N  DF     SSR  detRCov   OLS-R2 McElroy-R2
+system 177 158 50.5129 0.000645 -6.12419  -0.375833
+
+           N DF      SSR      MSE     RMSE         R2     Adj R2
+Anchoveta 59 53 36.88249 0.695896 0.834204 -13.963885 -15.375573
+Sardina   59 53  9.54861 0.180162 0.424455  -3.888001  -4.349133
+Jurel     59 52  4.08178 0.078496 0.280171  -0.527561  -0.703818
+
+The covariance matrix of the residuals used for estimation
+          Anchoveta    Sardina      Jurel
+Anchoveta  0.695896  0.3381957 -0.1379686
+Sardina    0.338196  0.1801624 -0.0683677
+Jurel     -0.137969 -0.0683677  0.0888662
+
+The covariance matrix of the residuals
+          Anchoveta    Sardina      Jurel
+Anchoveta  0.695896  0.3381957 -0.1171814
+Sardina    0.338196  0.1801624 -0.0581473
+Jurel     -0.117181 -0.0581473  0.0784958
+
+The correlations of the residuals
+          Anchoveta   Sardina     Jurel
+Anchoveta  1.000000  0.955133 -0.501376
+Sardina    0.955133  1.000000 -0.488961
+Jurel     -0.501376 -0.488961  1.000000
+
+
+3SLS estimates for 'Anchoveta' (equation 1)
+Model Formula: ln_P_Anchoveta ~ ln_h_Anchoveta + ln_h_Sardina + ln_h_Jurel + 
+    ln_H + ln_P_FishMeal
+Instruments: ~ln_Diesel + ln_SST + ln_Viento + ln_P_FishMeal + D_Shock_Jurel + 
+    ln_H
+
+                 Estimate Std. Error  t value Pr(>|t|)
+(Intercept)    21.2491550 22.0045046  0.96567  0.33859
+ln_h_Anchoveta  0.0311624  0.2265393  0.13756  0.89111
+ln_h_Sardina   -0.6198397  0.9213079 -0.67278  0.50401
+ln_h_Jurel      0.2243734  0.4242184  0.52891  0.59908
+ln_H            0.6300579  1.1523450  0.54676  0.58684
+ln_P_FishMeal  -0.8954230  1.8031744 -0.49658  0.62154
+
+Residual standard error: 0.834204 on 53 degrees of freedom
+Number of observations: 59 Degrees of Freedom: 53 
+SSR: 36.882489 MSE: 0.695896 Root MSE: 0.834204 
+Multiple R-Squared: -13.963885 Adjusted R-Squared: -15.375573 
+
+
+3SLS estimates for 'Sardina' (equation 2)
+Model Formula: ln_P_Sardina ~ ln_h_Sardina + ln_h_Anchoveta + ln_h_Jurel + ln_H + 
+    ln_P_FishMeal
+Instruments: ~ln_Diesel + ln_SST + ln_Viento + ln_P_FishMeal + D_Shock_Jurel + 
+    ln_H
+
+                Estimate Std. Error  t value Pr(>|t|)
+(Intercept)    12.940836  11.196222  1.15582  0.25294
+ln_h_Sardina   -0.307589   0.468775 -0.65615  0.51456
+ln_h_Anchoveta  0.032926   0.115267  0.28565  0.77626
+ln_h_Jurel      0.100712   0.215849  0.46659  0.64271
+ln_H            0.264315   0.586330  0.45079  0.65398
+ln_P_FishMeal  -0.151033   0.917482 -0.16462  0.86987
+
+Residual standard error: 0.424455 on 53 degrees of freedom
+Number of observations: 59 Degrees of Freedom: 53 
+SSR: 9.548608 MSE: 0.180162 Root MSE: 0.424455 
+Multiple R-Squared: -3.888001 Adjusted R-Squared: -4.349133 
+
+
+3SLS estimates for 'Jurel' (equation 3)
+Model Formula: ln_P_Jurel ~ ln_h_Jurel + ln_h_Anchoveta + ln_h_Sardina + ln_H + 
+    ln_P_FishMeal + D_Shock_Jurel
+Instruments: ~ln_Diesel + ln_SST + ln_Viento + ln_P_FishMeal + D_Shock_Jurel + 
+    ln_H
+
+                 Estimate Std. Error  t value Pr(>|t|)
+(Intercept)     6.9994967 11.7924870  0.59356  0.55538
+ln_h_Jurel      0.1360708  0.1575080  0.86390  0.39161
+ln_h_Anchoveta -0.1014551  0.0969696 -1.04626  0.30028
+ln_h_Sardina    0.2216465  0.5358545  0.41363  0.68084
+ln_H           -0.2640896  0.6414907 -0.41168  0.68227
+ln_P_FishMeal   0.4108483  0.9636105  0.42636  0.67160
+D_Shock_Jurel   0.0159379  0.1619092  0.09844  0.92196
+
+Residual standard error: 0.280171 on 52 degrees of freedom
+Number of observations: 59 Degrees of Freedom: 52 
+SSR: 4.08178 MSE: 0.078496 Root MSE: 0.280171 
+Multiple R-Squared: -0.527561 Adjusted R-Squared: -0.703818 
+

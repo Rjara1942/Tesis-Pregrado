@@ -1,8 +1,5 @@
 ################################################################################
-# 01_LIMPIEZA_PRECIOS.R
-# Objetivo: Procesar y validar datos de precios ex-vessel
-# Input: 2025.04.21.pelagicos_proceso-precios.mp.2012-2024.xlsx
-# Output: precios_clean.csv
+# LIMPIEZA_PRECIOS.
 ################################################################################
 
 library(tidyverse)
@@ -10,7 +7,7 @@ library(readxl)
 library(lubridate)
 
 # ==============================================================================
-# 1. CARGA DE DATOS BRUTOS
+# CARGA DE DATOS BRUTOS
 # ==============================================================================
 
 cat("\n=== CARGANDO DATOS DE PRECIOS ===\n")
@@ -53,25 +50,25 @@ cat("PRECIO:", paste(sort(unique(df_precio_raw$RG)), collapse=", "), "\n")
 cat("PROCESO:", paste(sort(unique(df_proceso_raw$RG)), collapse=", "), "\n")
 
 # ==============================================================================
-# 3. FILTROS Y LIMPIEZA - PRECIO
+#  FILTROS Y LIMPIEZA - PRECIO
 # ==============================================================================
 
 cat("\n=== APLICANDO FILTROS A PRECIOS ===\n")
 
 df_precio_clean <- df_precio_raw %>%
-  # 1. Filtrar solo las 3 especies de estudio
+  #  Filtrar solo las 3 especies de estudio
   filter(NM_RECURSO %in% c("ANCHOVETA", "SARDINA COMUN", "JUREL")) %>%
   
-  # 2. Filtrar solo industria de REDUCCIÓN (ANIMAL)
+  # Filtrar solo industria de REDUCCIÓN (ANIMAL)
   filter(CLASE_INDUSTRIA_II == "ANIMAL") %>%
   
-  # 3. Filtrar solo zona centro-sur
+  #  Filtrar solo zona centro-sur
   filter(RG %in% c(5, 7, 8, 9, 14, 10)) %>%
   
-  # 4. Eliminar precios faltantes o cero
+  #  Eliminar precios faltantes o cero
   filter(!is.na(PRECIO), PRECIO > 0) %>%
   
-  # 5. Seleccionar variables relevantes
+  #  Seleccionar variables relevantes
   select(
     ANIO,
     MES,
@@ -82,7 +79,7 @@ df_precio_clean <- df_precio_raw %>%
     TIPO_MP
   ) %>%
   
-  # 6. Estandarizar nombres de especies
+  # Estandarizar nombres de especies
   mutate(
     NM_RECURSO = str_trim(toupper(NM_RECURSO)),
     NM_RECURSO = case_when(
@@ -95,25 +92,25 @@ cat("Filas después de filtros:", nrow(df_precio_clean), "\n")
 cat("Pérdida:", nrow(df_precio_raw) - nrow(df_precio_clean), "filas\n")
 
 # ==============================================================================
-# 4. FILTROS Y LIMPIEZA - PROCESO
+#  FILTROS Y LIMPIEZA - PROCESO
 # ==============================================================================
 
 cat("\n=== APLICANDO FILTROS A PROCESO ===\n")
 
 df_proceso_clean <- df_proceso_raw %>%
-  # 1. Filtrar solo las 3 especies de estudio
+  #  Filtrar solo las 3 especies de estudio
   filter(NM_RECURSO %in% c("ANCHOVETA", "SARDINA COMUN", "JUREL")) %>%
   
-  # 2. Filtrar solo industria de REDUCCIÓN (ANIMAL)
+  #  Filtrar solo industria de REDUCCIÓN (ANIMAL)
   filter(CLASE_INDUSTRIA == "ANIMAL") %>%
   
-  # 3. Filtrar solo zona centro-sur
+  #  Filtrar solo zona centro-sur
   filter(RG %in% c(5, 7, 8, 9, 14, 10)) %>%
   
-  # 4. Eliminar cantidades faltantes o cero
+  #  Eliminar cantidades faltantes o cero
   filter(!is.na(MP_TOTAL), MP_TOTAL > 0) %>%
   
-  # 5. Seleccionar variables relevantes
+  #  Seleccionar variables relevantes
   select(
     ANIO,
     MES,
@@ -123,7 +120,7 @@ df_proceso_clean <- df_proceso_raw %>%
     MP_TOTAL
   ) %>%
   
-  # 6. Estandarizar nombres de especies
+  #  Estandarizar nombres de especies
   mutate(
     NM_RECURSO = str_trim(toupper(NM_RECURSO)),
     NM_RECURSO = case_when(
@@ -136,7 +133,7 @@ cat("Filas después de filtros:", nrow(df_proceso_clean), "\n")
 cat("Pérdida:", nrow(df_proceso_raw) - nrow(df_proceso_clean), "filas\n")
 
 # ==============================================================================
-# 5. UNIR PRECIO Y PROCESO (MATCH A NIVEL TRANSACCIÓN)
+#  UNIR PRECIO Y PROCESO (MATCH A NIVEL TRANSACCIÓN)
 # ==============================================================================
 
 cat("\n=== UNIENDO PRECIO CON PROCESO ===\n")
@@ -168,7 +165,7 @@ cat("\nTransacciones válidas (con precio Y cantidad):",
     nrow(df_transacciones_validas), "\n")
 
 # ==============================================================================
-# 6. DETECCIÓN DE OUTLIERS EN PRECIOS
+#  DETECCIÓN DE OUTLIERS EN PRECIOS
 # ==============================================================================
 
 cat("\n=== ANÁLISIS DE OUTLIERS ===\n")
@@ -208,7 +205,7 @@ print(table(df_con_outlier_flag$NM_RECURSO, df_con_outlier_flag$is_outlier))
 # Justificación: En mercados con shocks de oferta, precios extremos son informativos
 
 # ==============================================================================
-# 7. CALCULAR PRECIOS PONDERADOS POR MES-REGIÓN-ESPECIE
+#  CALCULAR PRECIOS PONDERADOS POR MES-REGIÓN-ESPECIE
 # ==============================================================================
 
 cat("\n=== CALCULANDO PRECIOS PONDERADOS ===\n")
@@ -243,7 +240,7 @@ df_precios_ponderados <- df_con_outlier_flag %>%
 cat("Observaciones precio-región-mes-especie:", nrow(df_precios_ponderados), "\n")
 
 # ==============================================================================
-# 8. VALIDACIÓN DE PRECIOS
+#  VALIDACIÓN DE PRECIOS
 # ==============================================================================
 
 cat("\n=== VALIDACIÓN DE PRECIOS ===\n")
@@ -287,7 +284,7 @@ cat("\nCobertura temporal (meses con datos por año):\n")
 print(cobertura_temporal)
 
 # ==============================================================================
-# 9. GUARDAR DATOS LIMPIOS
+#  GUARDAR DATOS LIMPIOS
 # ==============================================================================
 
 write_csv(df_precios_ponderados, "precios_clean.csv")
@@ -300,7 +297,7 @@ cat("✓ precios_clean.csv\n")
 cat("✓ transacciones_individuales.csv\n")
 
 # ==============================================================================
-# 10. RESUMEN EJECUTIVO
+#  RESUMEN 
 # ==============================================================================
 
 cat("\n" , rep("=", 80), "\n")
