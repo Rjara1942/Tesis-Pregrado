@@ -8,7 +8,7 @@
 
 ## 2.1. Oferta efectiva y causalidad inversa en pesquerías
 
-*[Sección ya desarrollada por el autor. A continuación se presenta la versión mejorada con integración de nuevas referencias.]*
+
 
 La pesquería de pequeños pelágicos (SPF) del centro-sur de Chile exhibe una configuración económica particular que condiciona la elección del marco analítico: la oferta de corto plazo es prácticamente predeterminada. Tres mecanismos convergen para generar esta rigidez. Primero, la disponibilidad biológica — gobernada por ciclos de reclutamiento, distribución espacial de cardúmenes y variabilidad ambiental interanual asociada al ciclo ENSO (Yáñez et al., 2001; Alheit & Ñiquen, 2004) — determina el volumen potencial de captura antes de que las señales de precio puedan operar como mecanismo de ajuste. Segundo, la regulación pesquera impone restricciones cuantitativas exógenas mediante Cuotas Globales Anuales (TAC) fijadas ex-ante por SUBPESCA sobre la base de recomendaciones científicas del IFOP, complementadas por vedas reproductivas en agosto-septiembre y vedas de reclutamiento en enero-febrero. Tercero, la naturaleza altamente perecedera del recurso — el pescado fresco destinado a reducción industrial debe procesarse dentro de las 24 horas posteriores a la captura — elimina la posibilidad de almacenamiento intertemporal como instrumento de arbitraje.
 
@@ -94,4 +94,4 @@ La validez de esta estrategia de identificación se evalúa empíricamente media
 
 ------------------------------------------------------------------------
 
-*[Fin del Capítulo 2. Marco Teórico]*
+
