@@ -310,38 +310,4 @@ cat("✓ base_regional.csv\n")
 cat("✓ base_macrozonal_completa.csv\n")
 cat("✓ base_macrozonal_balanceada.csv (RECOMENDADA)\n")
 
-# ==============================================================================
-# 9. RESUMEN EJECUTIVO
-# ==============================================================================
 
-cat("\n", rep("=", 80), "\n")
-cat("RESUMEN DE INTEGRACIÓN\n")
-cat(rep("=", 80), "\n\n")
-
-cat("INPUTS:\n")
-cat("  - precios_clean.csv:", nrow(df_precios), "obs\n")
-cat("  - desembarques_clean.csv:", nrow(df_desembarques), "obs\n")
-
-cat("\nOUTPUTS GENERADOS:\n")
-cat("  1. base_regional.csv\n")
-cat("     • Observaciones:", nrow(df_regional_completo), "\n")
-cat("     • Nivel: Región-Mes-Especie\n")
-cat("     • Uso: Análisis de heterogeneidad espacial\n\n")
-
-cat("  2. base_macrozonal_completa.csv\n")
-cat("     • Observaciones:", nrow(df_macrozonal), "\n")
-cat("     • Nivel: Mes-Especie (agregado zona centro-sur)\n")
-cat("     • Uso: Análisis general\n\n")
-
-cat("  3. base_macrozonal_balanceada.csv ⭐ RECOMENDADA\n")
-cat("     • Observaciones:", nrow(meses_completos_macro), "\n")
-cat("     • Meses únicos:", n_distinct(meses_completos_macro$FECHA), "\n")
-cat("     • Panel: PERFECTAMENTE BALANCEADO (3 especies × N meses)\n")
-cat("     • Período:", min(meses_completos_macro$ANIO), "-", 
-    max(meses_completos_macro$ANIO), "\n")
-cat("     • Uso: ESTIMACIÓN IAIDS\n")
-
-cat("\n", rep("=", 80), "\n")
-cat("INTEGRACIÓN COMPLETADA\n")
-cat("Siguiente paso: Ejecutar 04_analisis_exploratorio.R\n")
-cat(rep("=", 80), "\n\n")
