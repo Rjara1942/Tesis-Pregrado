@@ -116,6 +116,8 @@ df_centrosur %>%
   count(Nombre_Region) %>%
   print()
 
+write_csv(df_centrosur, "p_pond_centrosur.csv")
+
 # Gráfico de "Presencia de Datos" (Tile Plot)
 # Muestra un cuadrado de color si hay dato, y blanco si falta.
 

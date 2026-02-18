@@ -1,0 +1,1028 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+
+\section{ANÁLISIS EXHAUSTIVO: INTEGRACIÓN PRECIOS +
+DESEMBARQUES}\label{anuxe1lisis-exhaustivo-integraciuxf3n-precios-desembarques}
+
+\subsection{RESUMEN EJECUTIVO}\label{resumen-ejecutivo}
+
+Tu script de integración (\texttt{03\_integracion\_base\_final.R}) es
+\textbf{EXCELENTE} y demuestra comprensión profunda del problema.
+Generaste 3 bases estratégicamente diseñadas, cada una con un propósito
+específico.
+
+\subsubsection{Bases Generadas}\label{bases-generadas}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1154}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2885}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1346}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1346}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.3269}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Base
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Observaciones
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Nivel
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Panel
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Uso Recomendado
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Regional} & 341 & Mes-Región-Especie & Desbalanceado &
+Heterogeneidad espacial \\
+\textbf{Macro Completa} & 204 & Mes-Especie & Desbalanceado & Análisis
+general \\
+\textbf{Macro Balanceada} & 54 & Mes-Especie & \textbf{PERFECTAMENTE
+BALANCEADO} & \textbf{IAIDS} \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{HALLAZGOS CRÍTICOS}\label{hallazgos-cruxedticos}
+
+\subsubsection{1. PROBLEMA DE COMPLETITUD: SOLO 18 MESES
+BALANCEADOS}\label{problema-de-completitud-solo-18-meses-balanceados}
+
+\textbf{HALLAZGO MÁS IMPORTANTE:}
+
+De 107 meses únicos con datos, \textbf{SOLO 18 meses (16.8\%)} tienen
+las 3 especies simultáneamente.
+
+\paragraph{Distribución Temporal de Meses
+Balanceados}\label{distribuciuxf3n-temporal-de-meses-balanceados}
+
+\begin{verbatim}
+Año    Meses Balanceados
+----   -----------------
+2012   1  (Marzo)
+2013   0  
+2014   0  
+2015   0  
+2016   1  (Marzo)
+2017   1  (Mayo)
+2018   1  (Febrero)
+2019   0  
+2020   5  (Feb, Mar, Abr, May, Jun)  ← Mejor año
+2021   0  
+2022   2  (Nov, Dic)
+2023   4  (Mar, Abr, May, Jun)
+2024   3  (Mar, Abr, May)
+----   -----------------
+TOTAL  18 meses en 13 años
+\end{verbatim}
+
+** Implicaciones:**
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Base balanceada es PEQUEÑA:} Solo 54 observaciones (18 meses ×
+  3 especies)
+\item
+  \textbf{Periodo NO es continuo:} Hay brechas de años completos
+  (2013-2015, 2019, 2021)
+\item
+  \textbf{Sesgo temporal:} 78\% de datos están en 2020-2024 (período
+  reciente)
+\item
+  \textbf{Sesgo estacional:} Concentración en marzo-junio (temporada
+  alta)
+\end{enumerate}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{2. CALIDAD DEL MATCH
+PRECIO-CANTIDAD}\label{calidad-del-match-precio-cantidad}
+
+\paragraph{Match Regional (nivel más
+desagregado)}\label{match-regional-nivel-muxe1s-desagregado}
+
+\begin{verbatim}
+Match Rate: 341 / 1,468 = 23.2%
+
+Obs con PRECIO y CANTIDAD: 341  
+Obs solo con PRECIO:       0
+Obs solo con CANTIDAD:     1,127
+Total:                     1,468
+\end{verbatim}
+
+\textbf{Interpretación:} - \textbf{Excelente:} No hay precios huérfanos
+(todas las obs de precio tienen cantidad) - \textbf{Esperado:} Muchos
+desembarques sin precio (encuestas de precio son muestrales)
+
+\paragraph{Match Macrozonal}\label{match-macrozonal}
+
+\begin{verbatim}
+Precios macro:       204 obs
+Desembarques macro:  464 obs
+Match:               204 obs (100% de precios)
+\end{verbatim}
+
+\textbf{Conclusión:} El match es \textbf{perfecto por diseño}. Los 204
+meses-especie con precio SIEMPRE tienen desembarques.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{3. CONSISTENCIA DE
+AGREGACIÓN}\label{consistencia-de-agregaciuxf3n}
+
+\paragraph{Precios: Regional →
+Macrozonal}\label{precios-regional-macrozonal}
+
+\begin{verbatim}
+Diferencia media:   0.00%  
+Diferencia máxima:  0.00%  
+\end{verbatim}
+
+\textbf{Perfecto:} La ponderación por \texttt{Q\_MUESTRA\_PLANTAS}
+funciona correctamente.
+
+\paragraph{Cantidades: Regional →
+Macrozonal}\label{cantidades-regional-macrozonal}
+
+\begin{verbatim}
+Diferencia media:   19.39%  
+Diferencia máxima:  99.88%  
+\end{verbatim}
+
+\textbf{PROBLEMA DETECTADO:}
+
+Esta discrepancia se debe a que: - \textbf{Base regional:} Solo tiene
+los 341 mes-región-especie que TAMBIÉN tienen precio - \textbf{Base
+macro:} Suma TODOS los desembarques (incluso sin precio)
+
+\textbf{Ejemplo del problema:}
+
+\begin{verbatim}
+Mes 2020-03, ANCHOVETA:
+ Regional completo suma: 50,000 ton (de regiones con precio)
+ Macro suma:            100,000 ton (de TODAS las regiones)
+
+Diferencia: 50% (porque faltan regiones sin datos de precio)
+\end{verbatim}
+
+** Implicación:** - Para análisis de \textbf{mercado de precios}, usa
+base regional o macro (son coherentes) - Para análisis de \textbf{oferta
+total}, la macro completa captura MÁS desembarques
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{4. DISTRIBUCIÓN DE MESES POR
+COMPLETITUD}\label{distribuciuxf3n-de-meses-por-completitud}
+
+\paragraph{Base Macrozonal Completa (204 obs en 107
+meses)}\label{base-macrozonal-completa-204-obs-en-107-meses}
+
+\begin{verbatim}
+Meses con:
+ 1 especie:  28 meses (26.2%)
+2 especies: 61 meses (57.0%)
+ 3 especies: 18 meses (16.8%)   Solo estos en base balanceada
+\end{verbatim}
+
+\textbf{Problema IAIDS:} - El modelo IAIDS requiere que \textbf{TODAS}
+las especies estén presentes - El 83.2\% de tus datos NO califica para
+IAIDS - Alternativas: 1. \textbf{Usar base balanceada} (54 obs, limitado
+pero correcto) 2. \textbf{Imputar precios faltantes} (riesgoso,
+introduce supuestos) 3. \textbf{Modelo AIDS parcial} (estimar con
+especies disponibles en cada período)
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{5. ANÁLISIS DE PRECIOS}\label{anuxe1lisis-de-precios}
+
+\paragraph{Estadísticas Descriptivas (Base
+Balanceada)}\label{estaduxedsticas-descriptivas-base-balanceada}
+
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule\noalign{}
+Especie & N & Media (\$/ton) & SD & CV & Mín & Máx \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Anchoveta} & 18 & 151,781 & 36,592 & 24.1\% & 62,695 &
+215,570 \\
+\textbf{Jurel} & 18 & 219,157 & 76,694 & \textbf{35.0\%} & 59,000 &
+300,000 \\
+\textbf{Sardina} & 18 & 150,271 & 35,260 & 23.5\% & 63,621 & 215,570 \\
+\end{longtable}
+
+\textbf{Hallazgos:} 1. \textbf{Jurel es MÁS CARO:} +45\% vs
+anchoveta/sardina (mayor contenido graso) 2. \textbf{Jurel es MÁS
+VOLÁTIL:} CV=35\% (mayor variabilidad de mercado) 3. \textbf{Anchoveta y
+sardina tienen precios similares} (sustitutos en reducción)
+
+\paragraph{Evolución Temporal de
+Precios}\label{evoluciuxf3n-temporal-de-precios}
+
+\begin{verbatim}
+Año    Anchoveta   Jurel    Sardina
+----   ---------   -------  --------
+2012   $62,695     $59,000  $63,621  ← Precios bajos (referencia)
+2016   $120,801    $114,000 $121,408 ← Dobla (↑90%)
+2017   $93,863     $120,000 $103,010 ← Caída
+2018   $215,570    $230,000 $215,570 ← Pico histórico (↑245%)
+2020   $149,826    $174,365 $142,255 ← Normalización
+2022   $140,000    $245,000 $140,000
+2023   $160,000    $290,000 $160,000 ← Jurel sube solo
+2024   $190,000    $300,000 $190,000 ← Máximo jurel
+\end{verbatim}
+
+\textbf{Tendencias:} - \textbf{2012-2018:} Crecimiento explosivo
+(+245\%) - \textbf{2018:} Pico sincronizado (¿boom de harina
+internacional?) - \textbf{2019-2024:} Divergencia (jurel sube,
+sardina/anchoveta estables)
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{6. ANÁLISIS DE
+CANTIDADES}\label{anuxe1lisis-de-cantidades}
+
+\paragraph{Desembarques por Año (Base
+Balanceada)}\label{desembarques-por-auxf1o-base-balanceada}
+
+\begin{verbatim}
+Año    Anchoveta  Jurel     Sardina
+----   ---------  --------  ---------
+2012   6,730      25,882    246,996   ← Boom sardina
+2016   30,622     23,188    40,715
+2017   8,768      70,295    30,950
+2018   2,142      50,864    15,462    ← Colapso sardina
+2020   118,707    359,308   191,763   ← Boom todo
+2022   23,647     58,053    33,226
+2023   156,126    360,130   358,354   ← Máximo histórico
+2024   97,533     312,394   83,439
+\end{verbatim}
+
+\textbf{Hallazgos:} 1. \textbf{Sardina colapsa:} 247k (2012) → 15k
+(2018) = -94\% 2. \textbf{Jurel explota:} 26k (2012) → 360k (2023) =
++1,290\% 3. \textbf{Anchoveta crece:} 7k (2012) → 156k (2023) = +2,130\%
+4. \textbf{2020 es excepcional:} Boom simultáneo en todas las especies
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{7. CORRELACIÓN PRECIO-CANTIDAD
+⚠}\label{correlaciuxf3n-precio-cantidad}
+
+\paragraph{Correlaciones por Especie (Base
+Balanceada)}\label{correlaciones-por-especie-base-balanceada}
+
+\begin{verbatim}
+Especie          Corr(P,Q)   Corr(log P, log Q)
+--------------   ---------   ------------------
+ANCHOVETA        +0.357      +0.282
+JUREL            +0.577      +0.295
+SARDINA COMÚN    -0.419      -0.377  ← ¡NEGATIVA!
+\end{verbatim}
+
+** HALLAZGO CRÍTICO:**
+
+Las correlaciones son \textbf{OPUESTAS a la teoría económica clásica}:
+
+\textbf{Esperado (Curva de oferta hacia arriba):}
+
+\begin{verbatim}
+↑ Cantidad → ↓ Precio (exceso de oferta)
+Correlación negativa
+\end{verbatim}
+
+\textbf{Observado:}
+
+\begin{verbatim}
+Anchoveta: ↑ Cantidad → ↑ Precio (+0.36)  
+Jurel:     ↑ Cantidad → ↑ Precio (+0.58)  
+Sardina:   ↑ Cantidad → ↓ Precio (-0.42)  ✓ (coherente)
+\end{verbatim}
+
+\textbf{Posibles Explicaciones:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Variable omitida: Precio internacional de harina}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Si precio mundial ↑ → incentiva captura ↑ Y precio local ↑
+  \item
+    Ambos efectos van en la misma dirección
+  \end{itemize}
+\item
+  \textbf{Demanda muy elástica}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Mercado de reducción puede absorber toda la oferta
+  \item
+    Precio está anclado al mercado internacional
+  \end{itemize}
+\item
+  \textbf{Efectos temporales confundidos}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Tendencia al alza en ambas variables (spurious correlation)
+  \item
+    Necesitas controlar por tendencia temporal
+  \end{itemize}
+\item
+  \textbf{Calidad del recurso}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Años con alto reclutamiento → + cantidad + mejor calidad → + precio
+  \item
+    \% grasa varía por temporada
+  \end{itemize}
+\end{enumerate}
+
+\textbf{Recomendación:} - Incluir \textbf{precio internacional de
+harina} como variable de control - Usar \textbf{diferencias primeras} o
+\textbf{tendencia temporal} - Modelo con \textbf{efectos fijos por año}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{8. DISPERSIÓN REGIONAL DE
+PRECIOS}\label{dispersiuxf3n-regional-de-precios}
+
+\paragraph{Alta Dispersión (CV \textgreater{}
+30\%)}\label{alta-dispersiuxf3n-cv-30}
+
+\textbf{Frecuencia:} 8 de 204 observaciones (3.9\%)
+
+\textbf{Top casos:}
+
+\begin{verbatim}
+Año-Mes  Especie    CV    N_Regiones  Precio_Medio
+-------- ---------  ----  ----------  ------------
+2019-07  Sardina    84.5% 3           $131,934
+2019-11  Sardina    78.7% 3           $144,046
+2019-12  Sardina    78.2% 3           $142,656
+2019-07  Anchoveta  42.8% 3           $144,208
+\end{verbatim}
+
+\textbf{Patrón:} - \textbf{Concentrado en 2019} (¿evento específico?) -
+\textbf{Sardina es más volátil regionalmente} - \textbf{3 regiones con
+precios muy diferentes} (segmentación de mercado)
+
+\textbf{Interpretación:} - Posible \textbf{calidad diferencial} por
+región - O \textbf{mercados parcialmente segmentados} - O \textbf{error
+de medición} (encuestas pequeñas)
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{9. ANÁLISIS DE OUTLIERS}\label{anuxe1lisis-de-outliers}
+
+\paragraph{Frecuencia General}\label{frecuencia-general}
+
+\begin{verbatim}
+Base Macro Completa (204 obs):
+├─ Outliers de PRECIO:    1  (0.5%)   ✓ Muy pocos
+└─ Outliers de CANTIDAD:  150 (73.5%)  ¡Mayoría!
+\end{verbatim}
+
+\textbf{💡 Hallazgo Importante:}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Precios son muy estables} (1 outlier en 204 obs)
+\item
+  \textbf{Cantidades son muy volátiles} (150 outliers en 204 obs)
+\end{itemize}
+
+\textbf{Implicación:} - Los ``outliers'' de cantidad son \textbf{EVENTOS
+REALES} (pulsos de captura, temporada excepcional) - \textbf{NO
+eliminarlos} (son informativos) - Pero usar \textbf{modelos robustos}
+(quantile regression, GLM gamma)
+
+\paragraph{Outliers por Especie (Base
+Balanceada)}\label{outliers-por-especie-base-balanceada}
+
+\begin{verbatim}
+Especie          Outliers_Precio  Outliers_Cantidad
+-------------   ---------------  -----------------
+ANCHOVETA       0                20 / 18 obs (111%)
+JUREL           0                13 / 18 obs (72%)
+SARDINA COMÚN   0                21 / 18 obs (117%)
+\end{verbatim}
+
+\textbf{Nota:} El número de outliers puede exceder N obs porque es suma
+acumulada de outliers regionales.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{10. COMPOSICIÓN DE
+FLOTAS}\label{composiciuxf3n-de-flotas}
+
+\paragraph{Participación Industrial
+Promedio}\label{participaciuxf3n-industrial-promedio}
+
+\begin{verbatim}
+Especie          % Industrial
+--------------   ------------
+ANCHOVETA        2.7%   (97.3% artesanal)
+JUREL            93.8%  (6.2% artesanal)
+SARDINA COMÚN    5.3%   (94.7% artesanal)
+\end{verbatim}
+
+\textbf{Conclusión:} - \textbf{Jurel = Flota industrial} -
+\textbf{Sardina y Anchoveta = Flota artesanal}
+
+\paragraph{Evolución Temporal (\%
+Industrial)}\label{evoluciuxf3n-temporal-industrial}
+
+\begin{verbatim}
+Año   Anchoveta  Jurel  Sardina
+----  ---------  -----  -------
+2012  15.7%      98.8%  5.7%
+2016  2.2%       99.2%  33.7%  ← Sardina tuvo pico industrial
+2017  4.1%       99.6%  0.2%
+2018  17.8%      97.2%  44.7%  ← Otro pico sardina
+2020  0.0%       98.9%  0.0%   ← Artesanal puro
+2022  1.2%       55.1%  0.1%   ← ¡Jurel cae a 55%!
+2023  0.9%       98.8%  1.8%   ← Jurel recupera
+2024  0.9%       97.8%  1.4%
+\end{verbatim}
+
+\textbf{Hallazgos:} 1. \textbf{2022 es ANÓMALO:} Jurel industrial cae a
+55\% (¿regulación, veda, crisis?) 2. \textbf{Sardina fluctúa:} 0.2\% →
+44.7\% → 0.1\% (muy variable) 3. \textbf{Anchoveta estable:} Siempre
+\textless18\% industrial
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{EVALUACIÓN METODOLÓGICA DEL
+CÓDIGO}\label{evaluaciuxf3n-metodoluxf3gica-del-cuxf3digo}
+
+\subsubsection{Fortalezas del Script}\label{fortalezas-del-script}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Estrategia dual bien pensada:}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Regional para heterogeneidad espacial
+  \item
+    Macrozonal para IAIDS
+  \end{itemize}
+\item
+  \textbf{Ponderación correcta:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{PRECIO\_MACRO }\OtherTok{=} \FunctionTok{weighted.mean}\NormalTok{(PRECIO\_PONDERADO, }\AttributeTok{w =}\NormalTok{ Q\_MUESTRA\_PLANTAS)}
+\end{Highlighting}
+\end{Shaded}
+
+  Pondera por volumen de muestra, no por número de regiones.
+\item
+  \textbf{Indicadores de calidad incluidos:}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{CV\_PRECIO\_REGIONAL}: Detecta segmentación
+  \item
+    \texttt{N\_OUTLIERS\_PRECIO/CANTIDAD}: Flaggea eventos extremos
+  \item
+    \texttt{N\_REGIONES\_PRECIO/DESEMB}: Documenta cobertura
+  \end{itemize}
+\item
+  \textbf{Tres outputs diferenciados:}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Regional (análisis espacial)
+  \item
+    Macro completa (máxima data)
+  \item
+    Macro balanceada (IAIDS)
+  \end{itemize}
+\item
+  \textbf{Validaciones exhaustivas:}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Diferencias regional vs macro
+  \item
+    Rangos razonables
+  \item
+    Casos especiales documentados
+  \end{itemize}
+\end{enumerate}
+
+\subsubsection{Áreas de Mejora}\label{uxe1reas-de-mejora}
+
+\paragraph{1. Imputación de Precios Faltantes
+(Opcional)}\label{imputaciuxf3n-de-precios-faltantes-opcional}
+
+\textbf{Problema:} Solo 18/107 meses tienen 3 especies.
+
+\textbf{Solución posible:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Imputar con media móvil regional}
+\NormalTok{df\_precios\_imputado }\OtherTok{\textless{}{-}}\NormalTok{ df\_precios }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(RG, NM\_RECURSO) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(ANIO, MES) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{PRECIO\_IMPUTADO =}\NormalTok{ zoo}\SpecialCharTok{::}\FunctionTok{na.approx}\NormalTok{(PRECIO\_PONDERADO, }\AttributeTok{na.rm =} \ConstantTok{FALSE}\NormalTok{),}
+    \AttributeTok{PRECIO\_ORIGINAL =} \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(PRECIO\_PONDERADO)}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Ventajas:} - Crea panel más completo (maybe 50-60 meses
+balanceados)
+
+\textbf{Desventajas:} - Introduce supuestos (interpolación lineal) -
+Debes reportar sensibilidad con/sin imputación
+
+\paragraph{2. Deflactar Precios}\label{deflactar-precios}
+
+\textbf{Problema:} Serie 2012-2024 (12 años, inflación acumulada
+\textasciitilde60\% en Chile).
+
+\textbf{Solución:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_macro }\OtherTok{\textless{}{-}}\NormalTok{ df\_macro }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{left\_join}\NormalTok{(ipc\_data, }\AttributeTok{by =} \StringTok{"ANIO"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{PRECIO\_REAL =}\NormalTok{ PRECIO\_MACRO }\SpecialCharTok{*}\NormalTok{ (IPC\_2024 }\SpecialCharTok{/}\NormalTok{ IPC),}
+    \AttributeTok{PRECIO\_NOMINAL =}\NormalTok{ PRECIO\_MACRO}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\paragraph{3. Agregar Precio
+Internacional}\label{agregar-precio-internacional}
+
+\textbf{Fuente:} IFFO (harina de pescado Perú super prime)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Merge con serie internacional}
+\NormalTok{df\_final }\OtherTok{\textless{}{-}}\NormalTok{ df\_macro }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{left\_join}\NormalTok{(precio\_harina\_mundial, }\AttributeTok{by =} \FunctionTok{c}\NormalTok{(}\StringTok{"ANIO"}\NormalTok{, }\StringTok{"MES"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Importancia:} El precio ex-vessel está \textbf{fuertemente
+correlacionado} con precio de harina.
+
+\paragraph{4. Variables Derivadas}\label{variables-derivadas}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Rezagos}
+\NormalTok{df\_final }\OtherTok{\textless{}{-}}\NormalTok{ df\_final }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(NM\_RECURSO) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(FECHA) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{P\_LAG1 =} \FunctionTok{lag}\NormalTok{(PRECIO\_MACRO, }\DecValTok{1}\NormalTok{),}
+    \AttributeTok{Q\_LAG1 =} \FunctionTok{lag}\NormalTok{(Q\_MACRO, }\DecValTok{1}\NormalTok{),}
+    
+    \CommentTok{\# Promedio móvil}
+    \AttributeTok{P\_MA3 =}\NormalTok{ (PRECIO\_MACRO }\SpecialCharTok{+} \FunctionTok{lag}\NormalTok{(PRECIO\_MACRO,}\DecValTok{1}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{lag}\NormalTok{(PRECIO\_MACRO,}\DecValTok{2}\NormalTok{)) }\SpecialCharTok{/} \DecValTok{3}\NormalTok{,}
+    
+    \CommentTok{\# Variación mensual}
+    \AttributeTok{P\_CRECIMIENTO =}\NormalTok{ (PRECIO\_MACRO }\SpecialCharTok{/} \FunctionTok{lag}\NormalTok{(PRECIO\_MACRO, }\DecValTok{1}\NormalTok{) }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{) }\SpecialCharTok{*} \DecValTok{100}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{PROBLEMAS IDENTIFICADOS Y
+SOLUCIONES}\label{problemas-identificados-y-soluciones}
+
+\subsubsection{Problema 1: Base Balanceada MUY PEQUEÑA (54
+obs)}\label{problema-1-base-balanceada-muy-pequeuxf1a-54-obs}
+
+\textbf{Impacto:} - IAIDS requiere estimar múltiples parámetros - Con
+solo 54 obs, poder estadístico es bajo - Intervalos de confianza serán
+amplios
+
+\textbf{Soluciones:}
+
+\textbf{Opción A: Imputar precios faltantes}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Pros: Sube a \textasciitilde{}150{-}180 obs}
+\CommentTok{\# Contras: Introduce supuestos}
+\CommentTok{\# Recomendación: Hacer y reportar robustez}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Opción B: Ampliar ventana temporal}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Incluir 2010{-}2011 si hay datos}
+\CommentTok{\# Pros: Más observaciones}
+\CommentTok{\# Contras: Puede haber cambios estructurales}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Opción C: Modelo parcial}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Estimar con pares de especies cuando solo 2 disponibles}
+\CommentTok{\# Pros: Usa más data (107 meses)}
+\CommentTok{\# Contras: Más complejo, resultados menos directos}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Recomendación:} - \textbf{Principal:} Usa base balanceada (54
+obs) con resultados cautelosos - \textbf{Robustez:} Re-estima con base
+imputada
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Problema 2: Correlaciones Precio-Cantidad
+Positivas}\label{problema-2-correlaciones-precio-cantidad-positivas}
+
+\textbf{Diagnóstico:} Variable omitida (precio internacional).
+
+\textbf{Solución:}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Modelo con precio harina}
+\FunctionTok{lm}\NormalTok{(}\FunctionTok{log}\NormalTok{(PRECIO\_MACRO) }\SpecialCharTok{\textasciitilde{}} \FunctionTok{log}\NormalTok{(Q\_MACRO) }\SpecialCharTok{+} \FunctionTok{log}\NormalTok{(PRECIO\_HARINA\_INTL) }\SpecialCharTok{+} 
+                       \FunctionTok{factor}\NormalTok{(NM\_RECURSO) }\SpecialCharTok{+} \FunctionTok{factor}\NormalTok{(MES))}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Esperado:} - \texttt{log(Q\_MACRO)} se vuelve negativo
+(correcto) - \texttt{log(PRECIO\_HARINA\_INTL)} captura tendencia común
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Problema 3: Diferencias Cantidad Regional vs
+Macro}\label{problema-3-diferencias-cantidad-regional-vs-macro}
+
+\textbf{Causa:} Base regional solo suma regiones CON precio.
+
+\textbf{Solución:} Documenta claramente en tu tesis:
+
+\begin{quote}
+``La base macrozonal agrega desembarques de TODAS las regiones del
+centro-sur, mientras que la base regional solo incluye regiones con
+datos de precio disponibles. Por tanto, los desembarques macrozonas son
+sistemáticamente mayores (promedio +19\%) que la suma regional reportada
+en base\_regional.csv. Esta diferencia es esperada y no constituye un
+error.''
+\end{quote}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{CHECKLIST ANTES DE ESTIMAR
+IAIDS}\label{checklist-antes-de-estimar-iaids}
+
+\subsubsection{Datos}\label{datos}
+
+\begin{itemize}
+\tightlist
+\item[$\boxtimes$]
+  Base balanceada con 3 especies × N meses
+\item[$\boxtimes$]
+  Precios y cantidades positivos
+\item[$\boxtimes$]
+  Sin valores faltantes
+\item[$\square$]
+  Precios deflactados (PENDIENTE - recomendado)
+\item[$\square$]
+  Precio internacional incluido (PENDIENTE - crítico)
+\end{itemize}
+
+\subsubsection{Variables Derivadas}\label{variables-derivadas-1}
+
+\begin{itemize}
+\tightlist
+\item[$\square$]
+  Shares de gasto calculados
+\item[$\square$]
+  Índice de precios Stone
+\item[$\square$]
+  Variables de control (tendencia, estacionalidad)
+\end{itemize}
+
+\subsubsection{Validaciones}\label{validaciones}
+
+\begin{itemize}
+\tightlist
+\item[$\boxtimes$]
+  Consistencia agregación regional-macro
+\item[$\boxtimes$]
+  Rangos razonables de precios/cantidades
+\item[$\boxtimes$]
+  Outliers identificados
+\item[$\square$]
+  Multicolinealidad verificada
+\item[$\square$]
+  Estacionariedad testada
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{📊 ESTADÍSTICAS FINALES: BASE MACROZONAL
+BALANCEADA}\label{estaduxedsticas-finales-base-macrozonal-balanceada}
+
+\subsubsection{Periodo y Cobertura}\label{periodo-y-cobertura}
+
+\begin{verbatim}
+Total observaciones: 54 (18 meses × 3 especies)
+Período: 2012-2024 (13 años, pero solo 18 meses con datos completos)
+Distribución temporal:
+  - 2012-2018: 4 meses (22%)
+  - 2020-2024: 14 meses (78%)  ← Sesgo reciente
+\end{verbatim}
+
+\subsubsection{Precios (\$/tonelada)}\label{precios-tonelada}
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule\noalign{}
+Especie & Media & Mediana & Min & Max & CV \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Anchoveta & 151,781 & 149,826 & 62,695 & 215,570 & 24\% \\
+Jurel & 219,157 & 217,696 & 59,000 & 300,000 & 35\% \\
+Sardina & 150,271 & 150,636 & 63,621 & 215,570 & 23\% \\
+\end{longtable}
+
+\subsubsection{Cantidades
+(toneladas/mes)}\label{cantidades-toneladasmes}
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule\noalign{}
+Especie & Media & Mediana & Min & Max & CV \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Anchoveta & 24,682 & 15,957 & 1,274 & 118,707 & 152\% \\
+Jurel & 70,006 & 54,458 & 23,188 & 360,130 & 140\% \\
+Sardina & 55,606 & 33,728 & 15,462 & 358,354 & 158\% \\
+\end{longtable}
+
+\textbf{Nota:} Alta variabilidad en cantidades (CV \textgreater140\%) vs
+baja en precios (CV \textless35\%).
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{RECOMENDACIONES FINALES}\label{recomendaciones-finales}
+
+\subsubsection{Para Estimación IAIDS}\label{para-estimaciuxf3n-iaids}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Usa base\_macrozonal\_balanceada.csv}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Es perfectamente balanceada (requisito IAIDS)
+  \item
+    Tiene 54 obs (suficiente pero justo)
+  \end{itemize}
+\item
+  \textbf{Deflacta precios ANTES de estimar}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Fundamental para serie 2012-2024
+  \item
+    Usa IPC Chile o Índice de Precios al Productor
+  \end{itemize}
+\item
+  \textbf{Agrega precio internacional harina}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Variable de control crítica
+  \item
+    Explica tendencia común en precios
+  \end{itemize}
+\item
+  \textbf{Especificación recomendada:}
+
+\begin{verbatim}
+Share_i = α_i + Σ γ_ij log(P_j) + β_i log(Y/P*) + 
+          δ_i PRECIO_HARINA + θ_i TENDENCIA + ε_i
+\end{verbatim}
+\item
+  \textbf{Análisis de robustez:}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Con/sin outliers
+  \item
+    Con/sin controles temporales
+  \item
+    Ventana móvil (últimos 5 años vs serie completa)
+  \end{itemize}
+\end{enumerate}
+
+\subsubsection{Para tu Tesis}\label{para-tu-tesis}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Documenta limitaciones:}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Solo 18 meses balanceados de 107 disponibles (16.8\%)
+  \item
+    Sesgo temporal hacia 2020-2024 (78\% de datos)
+  \item
+    Correlaciones precio-cantidad contraintuitivas
+  \end{itemize}
+\item
+  \textbf{Explica decisiones metodológicas:}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Por qué macrozonal vs regional
+  \item
+    Por qué base balanceada (requisito técnico IAIDS)
+  \item
+    Cómo trataste outliers (flaggeados, no eliminados)
+  \end{itemize}
+\item
+  \textbf{Reporta tabla comparativa:}
+
+\begin{verbatim}
+| Modelo | Base | N | R² | Elasticidades |
+|--------|------|---|----|--------------| 
+| ...
+\end{verbatim}
+\item
+  \textbf{Análisis de sensibilidad:}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Tabla con resultados usando las 3 bases
+  \item
+    Muestra robustez (o falta de ella)
+  \end{itemize}
+\end{enumerate}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+Tu trabajo de integración es \textbf{EXCELENTE}. El código está bien
+estructurado, las validaciones son exhaustivas, y las decisiones
+metodológicas son correctas.
+
+\end{document}

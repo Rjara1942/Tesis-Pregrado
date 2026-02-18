@@ -1,0 +1,90 @@
+
+systemfit results 
+method: 3SLS 
+
+         N  DF     SSR  detRCov   OLS-R2 McElroy-R2
+system 468 452 41.9679 0.000196 -1.47887  -0.331016
+
+            N  DF      SSR      MSE     RMSE        R2    Adj R2
+Anchoveta 156 151 13.07153 0.086566 0.294222 -0.884629 -0.934553
+Sardina   156 151  5.89821 0.039061 0.197639 -0.036943 -0.064411
+Jurel     156 150 22.99812 0.153321 0.391562 -4.340574 -4.518593
+
+The covariance matrix of the residuals used for estimation
+          Anchoveta    Sardina      Jurel
+Anchoveta 0.0865664  0.0100233  0.0564384
+Sardina   0.0100233  0.0390610 -0.0150907
+Jurel     0.0564384 -0.0150907  0.0960137
+
+The covariance matrix of the residuals
+           Anchoveta   Sardina      Jurel
+Anchoveta  0.0865664 0.0100233 -0.0742661
+Sardina    0.0100233 0.0390610  0.0250885
+Jurel     -0.0742661 0.0250885  0.1533208
+
+The correlations of the residuals
+          Anchoveta  Sardina     Jurel
+Anchoveta  1.000000 0.172370 -0.644637
+Sardina    0.172370 1.000000  0.324193
+Jurel     -0.644637 0.324193  1.000000
+
+
+3SLS estimates for 'Anchoveta' (equation 1)
+Model Formula: ln_P_Anchoveta ~ ln_h_Anchoveta + ln_h_Sardina + ln_h_Jurel + 
+    ln_P_Harina
+Instruments: ~ln_Diesel + ln_SST + ln_Viento + ln_P_Harina + D_Shock
+
+                 Estimate Std. Error  t value Pr(>|t|)  
+(Intercept)     3.9032941  3.3650775  1.15994 0.247903  
+ln_h_Anchoveta -0.0329990  0.0860446 -0.38351 0.701881  
+ln_h_Sardina    0.0342370  0.1195042  0.28649 0.774894  
+ln_h_Jurel     -0.0278385  0.0460019 -0.60516 0.545981  
+ln_P_Harina     0.5795265  0.2273865  2.54864 0.011813 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.294222 on 151 degrees of freedom
+Number of observations: 156 Degrees of Freedom: 151 
+SSR: 13.071526 MSE: 0.086566 Root MSE: 0.294222 
+Multiple R-Squared: -0.884629 Adjusted R-Squared: -0.934553 
+
+
+3SLS estimates for 'Sardina' (equation 2)
+Model Formula: ln_P_Sardina ~ ln_h_Sardina + ln_h_Anchoveta + ln_h_Jurel + ln_P_Harina
+Instruments: ~ln_Diesel + ln_SST + ln_Viento + ln_P_Harina + D_Shock
+
+                  Estimate  Std. Error  t value  Pr(>|t|)   
+(Intercept)     6.31542347  2.26043489  2.79390 0.0058832 **
+ln_h_Sardina   -0.04293638  0.08027493 -0.53487 0.5935288   
+ln_h_Anchoveta  0.02169484  0.05779900  0.37535 0.7079271   
+ln_h_Jurel     -0.00282874  0.03090100 -0.09154 0.9271831   
+ln_P_Harina     0.41918815  0.15274308  2.74440 0.0067975 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.197639 on 151 degrees of freedom
+Number of observations: 156 Degrees of Freedom: 151 
+SSR: 5.898209 MSE: 0.039061 Root MSE: 0.197639 
+Multiple R-Squared: -0.036943 Adjusted R-Squared: -0.064411 
+
+
+3SLS estimates for 'Jurel' (equation 3)
+Model Formula: ln_P_Jurel ~ ln_h_Jurel + ln_h_Anchoveta + ln_h_Sardina + ln_P_Harina + 
+    D_Shock
+Instruments: ~ln_Diesel + ln_SST + ln_Viento + ln_P_Harina + D_Shock
+
+                 Estimate Std. Error  t value  Pr(>|t|)   
+(Intercept)    13.1299169  4.0902285  3.21007 0.0016234 **
+ln_h_Jurel      0.0296730  0.0534564  0.55509 0.5796608   
+ln_h_Anchoveta  0.1111520  0.1267387  0.87702 0.3818798   
+ln_h_Sardina   -0.1311782  0.1627928 -0.80580 0.4216347   
+ln_P_Harina    -0.0262413  0.2752894 -0.09532 0.9241857   
+D_Shock         0.2729887  0.1409819  1.93634 0.0547062 . 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.391562 on 150 degrees of freedom
+Number of observations: 156 Degrees of Freedom: 150 
+SSR: 22.998124 MSE: 0.153321 Root MSE: 0.391562 
+Multiple R-Squared: -4.340574 Adjusted R-Squared: -4.518593 
+

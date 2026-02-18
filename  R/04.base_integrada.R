@@ -13,7 +13,7 @@ library(readxl)
 # ==============================================================================
 
 # A. Base Macrozonal (Tu base limpia)
-df_macro <- read_csv("base_macrozonal_completa.csv")
+df_macro <- read_csv("base_macrozonal2.csv")
 
 # B. Precio FOB (Harina)
 df_fob <- read_csv("FOB_CLP.csv") %>%
@@ -68,7 +68,7 @@ df_integrada <- df_macro %>%
   )
 
 # Guardar base integrada limpia
-write_csv(df_integrada, "base_integrada.csv")
+write_csv(df_integrada, "base_integrada2.csv")
 
 # ==============================================================================
 # 5. GENERACIÓN DE GRÁFICOS

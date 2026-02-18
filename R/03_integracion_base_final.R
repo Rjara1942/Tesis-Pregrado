@@ -14,7 +14,7 @@ library(lubridate)
 
 cat("\n=== CARGANDO DATOS LIMPIOS ===\n")
 
-df_precios <- read_csv("precios_clean.csv", show_col_types = FALSE)
+df_precios <- read_csv("precios_ponderados_nueva_base.csv", show_col_types = FALSE)
 df_desembarques <- read_csv("desembarques_clean.csv", show_col_types = FALSE)
 
 cat("Precios:", nrow(df_precios), "filas\n")
@@ -118,8 +118,6 @@ df_precios_macro <- df_precios %>%
     # Indicadores de calidad
     CV_PRECIO_REGIONAL = sd(PRECIO_PONDERADO, na.rm = TRUE) / 
                          mean(PRECIO_PONDERADO, na.rm = TRUE),
-    N_OUTLIERS_PRECIO = sum(N_OUTLIERS, na.rm = TRUE),
-    
     .groups = "drop"
   ) %>%
   mutate(FECHA = make_date(year = ANIO, month = MES, day = 1))
@@ -136,7 +134,6 @@ df_desemb_macro <- df_desembarques %>%
     Q_INDUSTRIAL_MACRO = sum(Q_INDUSTRIAL, na.rm = TRUE),
     Q_ARTESANAL_MACRO = sum(Q_ARTESANAL, na.rm = TRUE),
     N_REGIONES_DESEMB = n_distinct(RG),
-    N_OUTLIERS_CANTIDAD = sum(N_OUTLIERS, na.rm = TRUE),
     .groups = "drop"
   ) %>%
   mutate(
@@ -176,94 +173,6 @@ cat("\nMeses con 3 especies (panel balanceado):",
 
 # ==============================================================================
 # 5. ANÁLISIS COMPARATIVO: REGIONAL VS MACROZONAL
-# ==============================================================================
-
-cat("\n=== COMPARACIÓN: REGIONAL VS MACROZONAL ===\n")
-
-comparacion <- tibble(
-  Característica = c(
-    "Observaciones totales",
-    "Meses únicos",
-    "Meses con 3 especies",
-    "% Completitud panel",
-    "Período inicio",
-    "Período fin"
-  ),
-  Regional = c(
-    nrow(df_regional_completo),
-    n_distinct(df_regional_completo$FECHA),
-    sum(df_regional_completo %>% 
-        group_by(ANIO, MES, RG) %>% 
-        summarise(n = n_distinct(NM_RECURSO), .groups = "drop") %>% 
-        pull(n) == 3) / 
-      n_distinct(df_regional_completo %>% select(ANIO, MES, RG)),
-    NA,  # Calcularemos después
-    min(df_regional_completo$ANIO),
-    max(df_regional_completo$ANIO)
-  ),
-  Macrozonal = c(
-    nrow(df_macrozonal),
-    n_distinct(df_macrozonal$FECHA),
-    n_distinct(meses_completos_macro$FECHA),
-    n_distinct(meses_completos_macro$FECHA) / n_distinct(df_macrozonal$FECHA),
-    min(df_macrozonal$ANIO),
-    max(df_macrozonal$ANIO)
-  )
-)
-
-print(comparacion)
-
-cat("\nRECOMENDACIÓN: Usar base MACROZONAL para estimación principal\n")
-cat("  Razón: Mayor completitud y coherencia con hipótesis de mercado único\n")
-
-# ==============================================================================
-# 6. VALIDACIONES DE CONSISTENCIA
-# ==============================================================================
-
-cat("\n=== VALIDACIONES DE CONSISTENCIA ===\n")
-
-# Check 1: Precios macrozonas vs regionales
-if(nrow(df_regional_completo) > 0 & nrow(df_macrozonal) > 0) {
-  
-  # Comparar agregados
-  check_agregacion <- df_regional_completo %>%
-    group_by(ANIO, MES, NM_RECURSO) %>%
-    summarise(
-      P_regional_pond = weighted.mean(PRECIO_PONDERADO, w = Q_MUESTRA_PLANTAS),
-      Q_regional_sum = sum(Q_TOTAL),
-      .groups = "drop"
-    ) %>%
-    inner_join(
-      df_macrozonal %>% select(ANIO, MES, NM_RECURSO, PRECIO_MACRO, Q_MACRO),
-      by = c("ANIO", "MES", "NM_RECURSO")
-    ) %>%
-    mutate(
-      diff_precio = abs(P_regional_pond - PRECIO_MACRO) / PRECIO_MACRO * 100,
-      diff_cantidad = abs(Q_regional_sum - Q_MACRO) / Q_MACRO * 100
-    )
-  
-  cat("Diferencias precio (regional vs macro):\n")
-  cat("  Media:", round(mean(check_agregacion$diff_precio, na.rm = TRUE), 2), "%\n")
-  cat("  Máxima:", round(max(check_agregacion$diff_precio, na.rm = TRUE), 2), "%\n")
-  
-  cat("Diferencias cantidad (regional vs macro):\n")
-  cat("  Media:", round(mean(check_agregacion$diff_cantidad, na.rm = TRUE), 2), "%\n")
-  cat("  Máxima:", round(max(check_agregacion$diff_cantidad, na.rm = TRUE), 2), "%\n")
-}
-
-# Check 2: Rangos razonables
-cat("\nRangos de variables macrozonas:\n")
-rangos <- df_macrozonal %>%
-  group_by(NM_RECURSO) %>%
-  summarise(
-    N = n(),
-    P_min = min(PRECIO_MACRO),
-    P_max = max(PRECIO_MACRO),
-    Q_min = min(Q_MACRO),
-    Q_max = max(Q_MACRO),
-    .groups = "drop"
-  )
-print(rangos)
 
 # ==============================================================================
 # 7. TRATAMIENTO DE CASOS ESPECIALES
@@ -300,7 +209,7 @@ if(nrow(casos_outliers) > 0) {
 write_csv(df_regional_completo, "base_regional.csv")
 
 # Base macrozonal completa
-write_csv(df_macrozonal, "base_macrozonal_completa.csv")
+write_csv(df_macrozonal, "base_macrozonal2.csv")
 
 # Base macrozonal SOLO meses con 3 especies (RECOMENDADA)
 write_csv(meses_completos_macro, "base_macrozonal_balanceada.csv")
