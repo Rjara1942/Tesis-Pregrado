@@ -2,3 +2,13 @@
 .Rhistory
 .RData
 .Ruserdata
+# data
+*.csv
+*.xlsx
+*.xls
+*.rds
+*.RDS
+*.zip
+# temporary
+*_backup*
+*_old*
