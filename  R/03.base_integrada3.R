@@ -1,8 +1,6 @@
 # ==============================================================================
 # INTEGRACIÓN Y ANÁLISIS DESCRIPTIVO 
-# ==============================================================================
-
-
+# =============================================================================
 
 library(tidyverse)
 library(lubridate)
@@ -13,7 +11,7 @@ library(readxl)
 # ==============================================================================
 
 # A. Base Macrozonal (Tu base limpia)
-df_macro <- read_csv("base_macrozonal2.csv")
+df_macro <- read_csv("base_integrada_macrozonal_v3.csv")
 
 # B. Precio FOB (Harina)
 df_fob <- read_csv("FOB_CLP.csv") %>%
@@ -60,7 +58,7 @@ df_integrada <- df_macro %>%
   left_join(df_ipc, by = c("ANIO", "MES")) %>%
   mutate(
     # Calcular Precios Reales (Pesos de 2024)
-    PRECIO_REAL_MACRO = PRECIO_MACRO / DEFLACTOR,
+    PRECIO_REAL_W = PRECIO_W / DEFLACTOR,
     P_HARINA_REAL = P_harina_FOB_CLP / DEFLACTOR,
     
     # Crear fecha para gráficos
@@ -68,14 +66,14 @@ df_integrada <- df_macro %>%
   )
 
 # Guardar base integrada limpia
-write_csv(df_integrada, "base_integrada2.csv")
+write_csv(df_integrada, "base_integrada3.csv")
 
 # ==============================================================================
 # 5. GENERACIÓN DE GRÁFICOS
 # ==============================================================================
-
+library(ggplot2)
 # A. Evolución del Precio Real por Especie
-g1 <- ggplot(df_integrada, aes(x = FECHA, y = PRECIO_REAL_MACRO, color = NM_RECURSO)) +
+g1 <- ggplot(df_integrada, aes(x = FECHA, y = PRECIO_REAL_W, color = NM_RECURSO)) +
   geom_line(size = 1) +
   geom_point(size = 1.5) +
   theme_minimal() +
@@ -97,7 +95,7 @@ ggsave("grafico_evolucion_precios.png", plot = g1, width = 10, height = 6)
 
 g2 <- ggplot() +
   # Precios de las especies (Líneas de color)
-  geom_line(data = df_integrada, aes(x = FECHA, y = PRECIO_REAL_MACRO, color = NM_RECURSO), size = 0.8) +
+  geom_line(data = df_integrada, aes(x = FECHA, y = PRECIO_REAL_W, color = NM_RECURSO), size = 0.8) +
   
   # Precio Harina FOB (Línea negra discontinua)
   geom_line(data = df_integrada, aes(x = FECHA, y = P_HARINA_REAL, linetype = "Harina FOB"), color = "black", size = 0.8) +
