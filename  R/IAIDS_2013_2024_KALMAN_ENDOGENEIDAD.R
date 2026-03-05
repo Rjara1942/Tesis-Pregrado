@@ -296,15 +296,15 @@ cor_J <- cor(df_wide$ln_P_J, df_wide$ln_Q_J)
 cor_S <- cor(df_wide$ln_P_S, df_wide$ln_Q_S)
 
 cat("  Anchoveta:", round(cor_A, 3), 
-    ifelse(cor_A > 0, "  ⚠️ POSITIVA (contraintuitivo)", "  ✓ Negativa"), "\n")
+    ifelse(cor_A > 0, "   POSITIVA (contraintuitivo)", "  ✓ Negativa"), "\n")
 cat("  Jurel:    ", round(cor_J, 3), 
-    ifelse(cor_J > 0, "  ⚠️ POSITIVA (contraintuitivo)", "  ✓ Negativa"), "\n")
+    ifelse(cor_J > 0, "  POSITIVA (contraintuitivo)", "  ✓ Negativa"), "\n")
 cat("  Sardina:  ", round(cor_S, 3), 
-    ifelse(cor_S > 0, "  ⚠️ POSITIVA (contraintuitivo)", "  ✓ Negativa"), "\n\n")
+    ifelse(cor_S > 0, "   POSITIVA (contraintuitivo)", "  ✓ Negativa"), "\n\n")
 
 cat("INTERPRETACIÓN:\n")
 if (cor_A > 0 | cor_J > 0) {
-  cat("  ⚠️⚠️ Correlaciones POSITIVAS detectadas\n")
+  cat("   Correlaciones POSITIVAS detectadas\n")
   cat("  → Viola teoría demanda inversa (esperado: negativo)\n")
   cat("  → EVIDENCIA DE ENDOGENEIDAD\n")
   cat("  → Variable omitida: Precio FOB (afecta AMBOS P y Q)\n")
@@ -415,11 +415,11 @@ cor_res_Q_S <- cor(residuos_S, df_wide$ln_Q_S)
 
 cat("Correlación RESIDUOS-CANTIDAD:\n")
 cat("  Anchoveta:", round(cor_res_Q_A, 4), 
-    ifelse(abs(cor_res_Q_A) > 0.1, " ⚠️ ENDOGENEIDAD", " ✓ OK"), "\n")
+    ifelse(abs(cor_res_Q_A) > 0.1, "  ENDOGENEIDAD", " ✓ OK"), "\n")
 cat("  Jurel:    ", round(cor_res_Q_J, 4), 
-    ifelse(abs(cor_res_Q_J) > 0.1, " ⚠️ ENDOGENEIDAD", " ✓ OK"), "\n")
+    ifelse(abs(cor_res_Q_J) > 0.1, "  ENDOGENEIDAD", " ✓ OK"), "\n")
 cat("  Sardina:  ", round(cor_res_Q_S, 4), 
-    ifelse(abs(cor_res_Q_S) > 0.1, " ⚠️ ENDOGENEIDAD", " ✓ OK"), "\n\n")
+    ifelse(abs(cor_res_Q_S) > 0.1, "  ENDOGENEIDAD", " ✓ OK"), "\n\n")
 
 cat("INTERPRETACIÓN:\n")
 cat("  Si Corr(ε, Q) ≠ 0 → ENDOGENEIDAD\n")
