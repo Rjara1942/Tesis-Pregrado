@@ -8,10 +8,9 @@
 
 ## 2.1. Oferta efectiva y causalidad inversa en pesquerías
 
-<<<<<<< HEAD:R/capitulo2_marco_teorico.md
+HEAD:R/capitulo2_marco_teorico.md
 
-=======
->>>>>>> b4ea1cd (avance tesis): R/capitulo2_marco_teorico.md
+b4ea1cd (avance tesis): R/capitulo2_marco_teorico.md
 
 La pesquería de pequeños pelágicos (SPF) del centro-sur de Chile exhibe una configuración económica particular que condiciona la elección del marco analítico: la oferta de corto plazo es prácticamente predeterminada. Tres mecanismos convergen para generar esta rigidez. Primero, la disponibilidad biológica — gobernada por ciclos de reclutamiento, distribución espacial de cardúmenes y variabilidad ambiental interanual asociada al ciclo ENSO (Yáñez et al., 2001; Alheit & Ñiquen, 2004) — determina el volumen potencial de captura antes de que las señales de precio puedan operar como mecanismo de ajuste. Segundo, la regulación pesquera impone restricciones cuantitativas exógenas mediante Cuotas Globales Anuales (TAC) fijadas ex-ante por SUBPESCA sobre la base de recomendaciones científicas del IFOP, complementadas por vedas reproductivas en agosto-septiembre y vedas de reclutamiento en enero-febrero. Tercero, la naturaleza altamente perecedera del recurso — el pescado fresco destinado a reducción industrial debe procesarse dentro de las 24 horas posteriores a la captura — elimina la posibilidad de almacenamiento intertemporal como instrumento de arbitraje.
 
@@ -96,5 +95,3 @@ El vínculo entre variabilidad ambiental y volatilidad de precios pesqueros ha s
 La validez de esta estrategia de identificación se evalúa empíricamente mediante el estadístico F de primera etapa — con el umbral convencional F \> 10 de Stock y Yogo (2005) para descartar instrumentos débiles — y el test de sobreidentificación de Sargan para evaluar la restricción de exclusión conjunta del set de instrumentos. En caso de instrumentos débiles, se contempla la inclusión de términos cuadráticos e interacciones entre variables ambientales, así como el uso de rezagos de cantidades desembarcadas como instrumentos predeterminados, válidos bajo el supuesto de ausencia de autocorrelación serial en los errores estructurales.
 
 ------------------------------------------------------------------------
-
-
