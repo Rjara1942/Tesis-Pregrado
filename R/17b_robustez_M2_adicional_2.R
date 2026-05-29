@@ -1,23 +1,14 @@
 ###############################################################################
 #  17b_robustez_M2_adicional.R
 #  ─────────────────────────────────────────────────────────────────────────────
-#  ANÁLISIS DE ROBUSTEZ ADICIONAL — Modelo M2 (TAC + biomasa + ambientales)
+#  ANÁLISIS DE ROBUSTEZ ADICIONAL — Modelo (TAC + biomasa + ambientales)
 #
 #  Cuatro bloques:
 #    A. Prueba Anderson-Rubin (AR) para instrumentos débiles
 #    B. Multicolinealidad FOB × Tendencia: estimación sin tendencia + VIF
 #    C. Correlación parcial FOB–precio controlando desembarques (serie ag.)
 #    D. IC bootstrap y alternativas a fwildclusterboot:
-#         (i)  CR2 vía clubSandwich
-#         (ii) Wild bootstrap percentile-t vía boot (manual)
-#         (iii) Pairs cluster bootstrap vía boot
-#
-#  Supone que el objeto `panel` y el modelo `m2` ya están en memoria
-#  (ejecutar primero 17_robustez_M2_TAC.R).
-#  Si el entorno está limpio, el script re-estima m2 desde panel_con_alternativas.csv
-#
-#  Paquetes necesarios (instalación automática si faltan):
-#    fixest, sandwich, clubSandwich, ivreg, lmtest, boot, dplyr, tidyr
+#        
 ###############################################################################
 
 # ── helpers de instalación silenciosa ────────────────────────────────────────
@@ -39,7 +30,7 @@ auto_install(c("fixest", "sandwich", "clubSandwich",
 # ─────────────────────────────────────────────────────────────────────────────
 
 if (!exists("panel") || !exists("m2")) {
-  message("⚠  Objetos 'panel' y/o 'm2' no encontrados — re-estimando desde CSV.")
+  message("Objetos 'panel' y/o 'm2' no encontrados — re-estimando desde CSV.")
 
   # Carga mínima del panel (ajustar ruta si es necesario)
   panel <- tryCatch(
