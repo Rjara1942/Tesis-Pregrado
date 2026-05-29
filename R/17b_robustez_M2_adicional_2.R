@@ -96,14 +96,7 @@ cat(strrep("═", 70), "\n\n")
 ###############################################################################
 # A. PRUEBA DE ANDERSON-RUBIN (AR)
 #    Complementa el F de primera etapa para el caso de instrumentos débiles.
-#    Hipótesis: H0: γ = 0 (versión exacta bajo homocedasticidad) y versión
-#    robusta via ivreg + waldtest con restricción sobre el parámetro estructural.
-#
-#    Procedimiento (Moreira 2003 / Andrews et al. 2019 en panel):
-#      1. Para cada valor γ0 en una grilla, construir y_tilde = y − γ0·h_hat
-#      2. Regresar y_tilde sobre instrumentos y controles
-#      3. AR stat = n·R²  o  F de los instrumentos en esa regresión
-#      4. El conjunto de confianza AR es {γ0 : AR(γ0) ≤ χ²_k(0.95)}
+
 ###############################################################################
 
 cat(strrep("─", 70), "\n")
