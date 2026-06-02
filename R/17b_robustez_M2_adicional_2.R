@@ -1,23 +1,14 @@
 ###############################################################################
 #  17b_robustez_M2_adicional.R
 #  ─────────────────────────────────────────────────────────────────────────────
-#  ANÁLISIS DE ROBUSTEZ ADICIONAL — Modelo M2 (TAC + biomasa + ambientales)
+#  ANÁLISIS DE ROBUSTEZ ADICIONAL — Modelo (TAC + biomasa + ambientales)
 #
 #  Cuatro bloques:
 #    A. Prueba Anderson-Rubin (AR) para instrumentos débiles
 #    B. Multicolinealidad FOB × Tendencia: estimación sin tendencia + VIF
 #    C. Correlación parcial FOB–precio controlando desembarques (serie ag.)
 #    D. IC bootstrap y alternativas a fwildclusterboot:
-#         (i)  CR2 vía clubSandwich
-#         (ii) Wild bootstrap percentile-t vía boot (manual)
-#         (iii) Pairs cluster bootstrap vía boot
-#
-#  Supone que el objeto `panel` y el modelo `m2` ya están en memoria
-#  (ejecutar primero 17_robustez_M2_TAC.R).
-#  Si el entorno está limpio, el script re-estima m2 desde panel_con_alternativas.csv
-#
-#  Paquetes necesarios (instalación automática si faltan):
-#    fixest, sandwich, clubSandwich, ivreg, lmtest, boot, dplyr, tidyr
+#        
 ###############################################################################
 
 # ── helpers de instalación silenciosa ────────────────────────────────────────
@@ -39,7 +30,7 @@ auto_install(c("fixest", "sandwich", "clubSandwich",
 # ─────────────────────────────────────────────────────────────────────────────
 
 if (!exists("panel") || !exists("m2")) {
-  message("⚠  Objetos 'panel' y/o 'm2' no encontrados — re-estimando desde CSV.")
+  message("Objetos 'panel' y/o 'm2' no encontrados — re-estimando desde CSV.")
 
   # Carga mínima del panel (ajustar ruta si es necesario)
   panel <- tryCatch(
@@ -105,14 +96,7 @@ cat(strrep("═", 70), "\n\n")
 ###############################################################################
 # A. PRUEBA DE ANDERSON-RUBIN (AR)
 #    Complementa el F de primera etapa para el caso de instrumentos débiles.
-#    Hipótesis: H0: γ = 0 (versión exacta bajo homocedasticidad) y versión
-#    robusta via ivreg + waldtest con restricción sobre el parámetro estructural.
-#
-#    Procedimiento (Moreira 2003 / Andrews et al. 2019 en panel):
-#      1. Para cada valor γ0 en una grilla, construir y_tilde = y − γ0·h_hat
-#      2. Regresar y_tilde sobre instrumentos y controles
-#      3. AR stat = n·R²  o  F de los instrumentos en esa regresión
-#      4. El conjunto de confianza AR es {γ0 : AR(γ0) ≤ χ²_k(0.95)}
+
 ###############################################################################
 
 cat(strrep("─", 70), "\n")
