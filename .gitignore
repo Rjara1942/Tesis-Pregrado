@@ -2,6 +2,12 @@
 .Rhistory
 .RData
 .Ruserdata
+.Rapp.history
+
+# sistema
+.DS_Store
+Thumbs.db
+
 # data
 *.csv
 *.xlsx
@@ -9,6 +15,7 @@
 *.rds
 *.RDS
 *.zip
-# temporary
+
+# temporal
 *_backup*
 *_old*
