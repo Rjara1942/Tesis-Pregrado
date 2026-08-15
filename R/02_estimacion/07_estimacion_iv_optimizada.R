@@ -42,7 +42,7 @@ cat("PARTE 1: CARGA Y PREPARACIÓN DE DATOS\n")
 cat("─────────────────────────────────────────────────────────────────────────\n\n")
 
 # Cargar panel
-panel <- read_csv(here::here("data", "panel_con_alternativas.csv"), show_col_types = FALSE)
+panel <- read_csv(here::here("data", "panel_upgrade.csv"), show_col_types = FALSE)
 
 cat("✓ Panel cargado:", nrow(panel), "observaciones\n")
 

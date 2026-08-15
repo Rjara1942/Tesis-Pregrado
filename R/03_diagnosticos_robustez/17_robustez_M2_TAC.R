@@ -22,69 +22,10 @@ library(tidyr)
 library(lmtest)
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# 0. CARGAR DATOS (replicar merge del script 16)
+# 0. CARGAR DATOS (panel_upgrade.csv ya incluye TAC + POST_2020 + ln_h_X_POST)
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# --- TAC Industrial ---
-tac_ind_raw <- read_excel(here::here("data", "TAC_anual.xlsx"), sheet = "industrial")
-names(tac_ind_raw) <- c("year", "recurso", "unidad", "cuota")
-tac_ind <- tac_ind_raw %>%
-  mutate(recurso = str_trim(recurso), recurso_lower = str_to_lower(recurso),
-         unidad = str_trim(unidad))
-
-tac_ind_complejo <- tac_ind %>%
-  filter(recurso_lower %in% c("anchoveta", "sardina común", "sardina comun"),
-         str_detect(unidad, regex("V.*X|V-X|V - X|V -X", ignore_case = TRUE))) %>%
-  group_by(year) %>%
-  summarise(TAC_ind_complejo = sum(cuota, na.rm = TRUE), .groups = "drop")
-
-# --- TAC Artesanal ---
-tac_art_raw <- read_excel(here::here("data", "TAC_anual.xlsx"), sheet = "artesanal")
-names(tac_art_raw) <- c("year", "recurso", "unidad", "cuota")
-tac_art <- tac_art_raw %>%
-  mutate(recurso = str_trim(recurso), recurso_lower = str_to_lower(recurso),
-         unidad = str_trim(unidad))
-
-regiones_cs <- c("^V$", "^V ", "^VI$", "^VI ", "^VII", "^VIII", "^IX",
-                 "^XIV", "^X$", "^X ", "Valparaíso", "Higgins", "Maule",
-                 "Biob", "Ñuble", "Araucanía", "Los Rios", "Los Lagos",
-                 "ARTESANAL V$", "ARTESANAL VI$", "ARTESANAL VII",
-                 "ARTESANAL VIII", "ARTESANAL IX", "ARTESANAL XIV",
-                 "ARTESANAL X$")
-patron_cs <- paste(regiones_cs, collapse = "|")
-excluir <- c("FAUNA", "Fauna", "F\\.A", "Investigación", "INVESTIGACION",
-             "Imprevisto", "IMPREVISTO", "Consumo Humano", "CONSUMO HUMANO",
-             "FUERA DE UNIDAD", "LINEA DE MANO", "Linea de Mano",
-             "Cesiones", "CESIONES")
-patron_excluir <- paste(excluir, collapse = "|")
-
-tac_art_cs <- tac_art %>%
-  filter(str_detect(unidad, regex(patron_cs, ignore_case = FALSE)),
-         !str_detect(unidad, regex("^XV|^I$|^II$|^III$|^IV$|^IV ", ignore_case = FALSE)),
-         !str_detect(unidad, regex(patron_excluir, ignore_case = FALSE)))
-
-tac_art_complejo <- tac_art_cs %>%
-  filter(recurso_lower %in% c("anchoveta", "sardina común", "sardina comun",
-                               "sardina", "sardina común")) %>%
-  group_by(year) %>%
-  summarise(TAC_art_complejo = sum(cuota, na.rm = TRUE), .groups = "drop")
-
-# --- Merge ---
-tac_total <- tac_ind_complejo %>%
-  full_join(tac_art_complejo, by = "year") %>%
-  mutate(across(starts_with("TAC_"), ~ replace_na(.x, 0)),
-         TAC_complejo = TAC_ind_complejo + TAC_art_complejo,
-         ln_TAC_complejo = log(TAC_complejo),
-         ln_TAC_ind_complejo = log(pmax(TAC_ind_complejo, 1)),
-         ln_TAC_art_complejo = log(pmax(TAC_art_complejo, 1)))
-
-panel <- read.csv(here::here("data", "panel_con_alternativas.csv")) %>%
-  left_join(tac_total %>% select(year, TAC_complejo, ln_TAC_complejo,
-                                  TAC_ind_complejo, TAC_art_complejo,
-                                  ln_TAC_ind_complejo, ln_TAC_art_complejo),
-            by = c("ANIO" = "year")) %>%
-  mutate(POST_2020 = ifelse(ANIO >= 2020, 1, 0),
-         ln_h_X_POST = ln_h_complejo * POST_2020)
+panel <- read.csv(here::here("data", "panel_upgrade.csv"))
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -452,8 +393,23 @@ wild_boot <- tryCatch({
 # ═══════════════════════════════════════════════════════════════════════════════
 
 resid_m2 <- residuals(m2)
-resid_ts <- tapply(resid_m2, panel$yearmonth[as.integer(names(resid_m2))],
-                    mean, na.rm = TRUE)
+# Reconstruir panel usado a partir de complete.cases de las vars del modelo
+vars_m2 <- c("ln_P_complejo", "ln_P_FOB", "ln_h_jurel",
+             "SEASON_SIN", "SEASON_COS", "TENDENCIA",
+             "ln_h_complejo", "SO_PUERTO", "SST_PUERTO_L1",
+             "ln_biomasa_sardina", "ln_TAC_complejo",
+             "NUI", "yearmonth")
+panel_used <- panel[complete.cases(panel[, vars_m2]), ]
+if (length(resid_m2) != nrow(panel_used)) {
+  warning(sprintf("Ajuste: length(resid)=%d, nrow(panel_used)=%d — recortando",
+                  length(resid_m2), nrow(panel_used)))
+  # Recorte defensivo por si fixest dropeó por otra razón (colinealidad, etc.)
+  n <- min(length(resid_m2), nrow(panel_used))
+  resid_m2   <- resid_m2[seq_len(n)]
+  panel_used <- panel_used[seq_len(n), ]
+}
+resid_ts <- tapply(as.numeric(resid_m2), panel_used$yearmonth,
+                   mean, na.rm = TRUE)
 resid_ts <- resid_ts[!is.na(resid_ts)]
 
 # ACF manual
@@ -473,10 +429,16 @@ fe_ols <- feols(
   data = panel
 )
 res_ols <- residuals(fe_ols)
-
-# Test manual: regresión de residuos sobre rezagos
-panel$resid_ols <- NA
-panel$resid_ols[as.integer(names(res_ols))] <- res_ols
+vars_ols <- c("ln_P_complejo", "ln_P_FOB", "ln_h_complejo", "ln_h_jurel",
+              "SEASON_SIN", "SEASON_COS", "TENDENCIA", "NUI")
+idx_ols <- which(complete.cases(panel[, vars_ols]))
+panel$resid_ols <- NA_real_
+if (length(res_ols) == length(idx_ols)) {
+  panel$resid_ols[idx_ols] <- as.numeric(res_ols)
+} else {
+  n <- min(length(res_ols), length(idx_ols))
+  panel$resid_ols[idx_ols[seq_len(n)]] <- as.numeric(res_ols)[seq_len(n)]
+}
 
 panel_bg <- panel %>%
   arrange(NUI, ANIO, MES) %>%
@@ -488,10 +450,10 @@ panel_bg <- panel %>%
 bg1 <- summary(lm(resid_ols ~ resid_L1, data = panel_bg))
 bg2 <- summary(lm(resid_ols ~ resid_L1 + resid_L2, data = panel_bg))
 
-cat("AR(1) coef:", round(coef(bg1$coefficients)[2, 1], 3),
-    "| p =", round(coef(bg1$coefficients)[2, 4], 4), "\n")
-cat("AR(2) coef:", round(coef(bg2$coefficients)[3, 1], 3),
-    "| p =", round(coef(bg2$coefficients)[3, 4], 4), "\n")
+cat("AR(1) coef:", round(bg1$coefficients[2, 1], 3),
+    "| p =", round(bg1$coefficients[2, 4], 4), "\n")
+cat("AR(2) coef:", round(bg2$coefficients[3, 1], 3),
+    "| p =", round(bg2$coefficients[3, 4], 4), "\n")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

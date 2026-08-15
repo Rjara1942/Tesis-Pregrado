@@ -22,50 +22,16 @@ auto_install <- function(pkgs) {
 }
 
 auto_install(c("fixest", "sandwich", "clubSandwich",
-               "ivreg", "lmtest", "boot", "dplyr", "tidyr",
-               "readxl", "stringr"))
+               "ivreg", "lmtest", "boot", "dplyr", "tidyr"))
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 0. VERIFICAR/RECONSTRUIR DATOS Y MODELO M2
+# 0. CARGAR PANEL Y RE-ESTIMAR M2
 # ─────────────────────────────────────────────────────────────────────────────
+# panel_upgrade.csv ya incluye TAC + POST_2020 + ln_h_X_POST (script 16).
 
 if (!exists("panel") || !exists("m2")) {
   message("Objetos 'panel' y/o 'm2' no encontrados — re-estimando desde CSV.")
-
-  # Carga mínima del panel (ajustar ruta si es necesario)
-  panel <- tryCatch(
-    read.csv(here::here("data", "panel_con_alternativas.csv")),
-    error = function(e) stop("No se encontró panel_con_alternativas.csv: ", e$message)
-  )
-
-  # TAC (si el archivo existe; si no, se omite ln_TAC_complejo del instrumento)
-  tac_ok <- FALSE
-  if (file.exists("TAC_anual.xlsx")) {
-    tac_ind_raw <- read_excel(here::here("data", "TAC_anual.xlsx"), sheet = "industrial")
-    names(tac_ind_raw) <- c("year", "recurso", "unidad", "cuota")
-    tac_ind <- tac_ind_raw %>%
-      mutate(recurso_lower = str_to_lower(str_trim(recurso)),
-             unidad = str_trim(unidad))
-    tac_ind_complejo <- tac_ind %>%
-      filter(recurso_lower %in% c("anchoveta", "sardina común", "sardina comun"),
-             str_detect(unidad, regex("V.*X|V-X|V - X|V -X", ignore_case = TRUE))) %>%
-      group_by(year) %>%
-      summarise(TAC_complejo = sum(cuota, na.rm = TRUE), .groups = "drop") %>%
-      mutate(ln_TAC_complejo = log(TAC_complejo))
-    panel <- left_join(panel, tac_ind_complejo, by = c("ANIO" = "year"))
-    tac_ok <- TRUE
-  }
-
-  panel <- panel %>%
-    mutate(POST_2020 = ifelse(ANIO >= 2020, 1, 0),
-           ln_h_X_POST = ln_h_complejo * POST_2020)
-
-  # Instrumento condicional al TAC
-  inst_rhs <- if (tac_ok) {
-    ~ SO_PUERTO + SST_PUERTO_L1 + ln_biomasa_sardina + ln_TAC_complejo
-  } else {
-    ~ SO_PUERTO + SST_PUERTO_L1 + ln_biomasa_sardina
-  }
+  panel <- read.csv(here::here("data", "panel_upgrade.csv"))
 
   m2 <- feols(
     ln_P_complejo ~ ln_P_FOB + ln_h_jurel +
@@ -987,7 +953,7 @@ cat("  Recomendación para reporte:\n")
 cat("  1. Estadístico principal: γ con SE_CR2 e IC_CR2 (corrección pocos clusters)\n")
 cat("  2. Robusto: IC Wild bootstrap percentile-t\n")
 cat("  3. Test de instrumentos débiles: IC Anderson-Rubin\n")
-cat("  4. Si todos coinciden en excluir 0 → conclusión de poder de monopsonio firme.\n\n")
+cat("  4. Si todos coinciden en excluir 0.\n\n")
 
 cat(strrep("═", 70), "\n")
 cat("  FIN DE ANÁLISIS DE ROBUSTEZ ADICIONAL\n")

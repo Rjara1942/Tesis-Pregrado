@@ -26,7 +26,7 @@ cat("===========================================================================
 cat("VERIFICACIONES ADICIONALES: BIOMASA Y FOB PERÚ\n")
 cat("=============================================================================\n\n")
 
-panel <- read_csv(here::here("data", "panel_con_alternativas.csv"), show_col_types = FALSE)
+panel <- read_csv(here::here("data", "panel_upgrade.csv"), show_col_types = FALSE)
 
 cat(sprintf("Observaciones: %d\n", nrow(panel)))
 cat(sprintf("Plantas: %d\n\n", n_distinct(panel$NUI)))

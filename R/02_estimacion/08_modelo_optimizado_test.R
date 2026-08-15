@@ -37,7 +37,7 @@ cat("===========================================================================
 cat("CARGANDO DATOS\n")
 cat("=============================================================================\n\n")
 
-panel <- read_csv(here::here("data", "panel_con_alternativas.csv"))
+panel <- read_csv(here::here("data", "panel_upgrade.csv"))
 cat(sprintf("Observaciones: %d\n", nrow(panel)))
 cat(sprintf("Plantas (NUI): %d\n", n_distinct(panel$NUI)))
 cat(sprintf("Período: %d - %d\n\n", min(panel$ANIO), max(panel$ANIO)))
@@ -477,10 +477,6 @@ cat(sprintf("  ✓ Plantas %s price-takers (Wald p = %.4f)\n",
 cat(sprintf("  ✓ γ significativo con CR2 conservador\n"))
 cat(sprintf("  ✓ Resultados robustos a serie de tiempo y submuestra\n\n"))
 
-cat("IMPLICANCIA PARA SIMULACIÓN BIOECONÓMICA:\n\n")
-cat(sprintf("  → Mantener modelo de precios endógeno\n"))
-cat(sprintf("  → Elasticidad a usar: γ = %.3f\n", gamma_opt))
-cat(sprintf("  → Feedback: +10%% captura → %.1f%% caída en precio\n", abs(gamma_opt) * 10))
 
 cat("\n")
 cat("=============================================================================\n")

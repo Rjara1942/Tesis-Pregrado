@@ -22,7 +22,7 @@ cat(paste(rep("=", 70), collapse=""), "\n\n")
 # PARTE 1: CARGAR Y DIAGNOSTICAR
 # =============================================================================
 
-panel <- read_csv(here::here("data", "panel_con_alternativas.csv"), show_col_types = FALSE)
+panel <- read_csv(("panel_upgrade.csv"), show_col_types = FALSE)
 
 cat("RESUMEN DEL PANEL:\n")
 cat("  Observaciones:", nrow(panel), "\n")

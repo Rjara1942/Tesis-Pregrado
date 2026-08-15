@@ -12,7 +12,7 @@ library(fixest)
 library(lmtest)
 library(sandwich)
 
-panel <- read_csv(here::here("data", "panel_con_alternativas.csv"), show_col_types = FALSE)
+panel <- read_csv(here::here("data", "panel_upgrade.csv"), show_col_types = FALSE)
 
 cat("=======================================================================\n")
 cat("ANÁLISIS DE ROBUSTEZ: PANEL DESBALANCEADO\n")
@@ -332,11 +332,7 @@ cat("-----------------------------------------------------------------------\n")
 cat("7. MODELO CON INTERACCIÓN TEMPORAL (TEST FORMAL)\n")
 cat("-----------------------------------------------------------------------\n\n")
 
-panel_est <- panel_est %>%
-  mutate(
-    POST_2020 = ifelse(ANIO >= 2020, 1, 0),
-    ln_h_X_POST = ln_h_complejo * POST_2020
-  )
+# NOTA: POST_2020 y ln_h_X_POST ya vienen en panel_upgrade.csv (script 16).
 
 # Modelo con interacción
 modelo_interaccion <- feols(
@@ -450,38 +446,5 @@ cat("   los efectos fijos pueden no ser suficientes.\n")
 cat("   DEFENSA: Los resultados son robustos a excluir plantas parciales.\n\n")
 
 # ------------------------------------------------------------------------------
-# 10. REDACCIÓN SUGERIDA PARA LA TESIS
-# ------------------------------------------------------------------------------
 
-cat("=======================================================================\n")
-cat("10. REDACCIÓN SUGERIDA PARA LA TESIS\n")
-cat("=======================================================================\n\n")
-
-cat("PÁRRAFO SUGERIDO:\n\n")
-
-cat("'El panel utilizado presenta desbalance temporal: algunas plantas\n")
-cat("procesadoras tienen observaciones durante todo el período 2012-2024,\n")
-cat("mientras que otras aparecen solo en subperíodos. Para evaluar la\n")
-cat("robustez de los resultados ante este desbalance, se estimó el modelo\n")
-cat("en múltiples submuestras.\n\n")
-
-cat("Los resultados muestran que la elasticidad precio-cantidad (gamma)\n")
-cat("varía entre", round(gamma_min, 2), "y", round(gamma_max, 2), 
-    "según la especificación,\n")
-cat("manteniendo siempre el signo negativo esperado. El test de Sargan\n")
-cat("no rechaza la validez de los instrumentos en", n_sargan_ok, "de", n_total, 
-    "especificaciones.\n\n")
-
-if (!is.na(gamma_pre) && !is.na(gamma_post) && abs((gamma_post - gamma_pre)/abs(gamma_pre)) > 0.3) {
-  cat("Se detecta un cambio estructural entre el período pre-2020 (gamma =",
-      round(gamma_pre, 2), ")\n")
-  cat("y post-2020 (gamma =", round(gamma_post, 2), 
-      "). Este cambio es consistente con la\n")
-  cat("recuperación de los stocks pesqueros documentada por SUBPESCA, que\n")
-  cat("implicó mayor variabilidad en la oferta disponible y, por tanto,\n")
-  cat("mayor sensibilidad del precio a las fluctuaciones de desembarques.'\n\n")
-}
-
-cat("=======================================================================\n")
 cat("FIN DEL ANÁLISIS DE ROBUSTEZ\n")
-cat("=======================================================================\n")

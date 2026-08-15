@@ -6,7 +6,7 @@ library(tidyverse)
 library(fixest)
 
 # Cargar datos
-panel <- read_csv(here::here("data", "panel_con_alternativas.csv"))
+panel <- read_csv(here::here("data", "panel_upgrade.csv"))
 
 # -----------------------------------------------------------------------------
 # MEJORA 1: Crear anomalías de salinidad (evita colinealidad)
@@ -23,11 +23,7 @@ panel <- panel %>%
 # -----------------------------------------------------------------------------
 # MEJORA 2: Dummy de cambio estructural post-COVID
 # -----------------------------------------------------------------------------
-panel <- panel %>%
-  mutate(
-    POST_2020 = ifelse(ANIO >= 2020, 1, 0),
-    ln_h_X_POST = ln_h_complejo * POST_2020
-  )
+# NOTA: POST_2020 y ln_h_X_POST ya vienen en panel_upgrade.csv (script 16).
 
 # -----------------------------------------------------------------------------
 # MEJORA 3: Interacciones para capturar variación intra-anual
