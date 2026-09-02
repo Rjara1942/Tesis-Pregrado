@@ -1,9 +1,7 @@
 # Tesis de Pregrado — Precios del complejo pelágico centro-sur
 
 Repositorio de la tesis de pregrado. Estimación de la respuesta de precios
-del complejo  pelágico (anchoveta-sardina) a
-variables ambientales, de oferta macrozonal e instrumentos de costos
-(diésel, FOB internacional, TAC), usando un panel planta-mes 2012–2024
+del complejo  pelágico (anchoveta-sardina) a la oferta macrozonal, usando un panel planta-mes 2012–2024
 con estimación por variables instrumentales (IV-2SLS).
 
 ## Estructura del repositorio
