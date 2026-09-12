@@ -30,7 +30,14 @@ ESPECIES <- c("JUREL", "SARDINA COMUN", "ANCHOVETA")
 REGIONES_CENTRO_SUR <- c(5, 6, 7, 8, 9, 10, 14, 16) 
 PERIODO <- 2012:2024
 
-MESES_MAP <- c(
+# ------------------------------------------------------------------------------
+# Flag de corrección de datos: 8 filas anómalas de NUI 90073 en 2013
+# ------------------------------------------------------------------------------
+# TRUE  -> excluye las 8 observaciones 
+# FALSE -> conserva el panel bruto de 418 obs.
+#          Reproduce el resultado Ver diagnóstico completo en:
+#          R/BLOQUE_B/B1_diagnostico_90073_y_filtros.R
+EXCLUIR_90073_2013 <- TRUEMESES_MAP <- c(
   "ene" = 1, "feb" = 2, "mar" = 3, "abr" = 4, "may" = 5, "jun" = 6,
   "jul" = 7, "ago" = 8, "sept" = 9, "sep" = 9, "oct" = 10, "nov" = 11, "dic" = 12
 )
@@ -201,6 +208,23 @@ df_P_planta <- inner_join(
     .groups = "drop"
   )
 
+# ------------------------------------------------------------------------------
+# 5.b. EXCLUSIÓN OPCIONAL DE 8 OBSERVACIONES ANÓMALAS (NUI 90073, AÑO 2013)
+# ------------------------------------------------------------------------------
+# Controlada por el flag EXCLUIR_90073_2013 declarado en la sección 1.
+
+if (isTRUE(EXCLUIR_90073_2013)) {
+  n_pre  <- nrow(df_P_planta)
+  df_P_planta <- df_P_planta %>%
+    filter(!(NUI == "90073" & ANIO == 2013))
+  n_post <- nrow(df_P_planta)
+  cat(sprintf("   [EXCLUIR_90073_2013 = TRUE] Excluidas %d obs anómalas de NUI 90073 en 2013.\n",
+              n_pre - n_post))
+} else {
+  cat("   [EXCLUIR_90073_2013 = FALSE] Se conservan las 8 filas anómalas de NUI 90073 en 2013.\n")
+  cat("     ADVERTENCIA: reproduce titular histórico gamma = -0,343.\n")
+  cat("     Para el titular corregido gamma = -0,192, activar EXCLUIR_90073_2013 <- TRUE en la sección 1.\n")
+}
 # ==============================================================================
 # 6. INTEGRACIÓN Y GENERACIÓN DEL PANEL BASE
 # ==============================================================================
