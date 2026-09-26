@@ -1,18 +1,24 @@
 # ==============================================================================
-# BLOQUE C-4 — F efectivo, AR de la principal y Wald 
+# BLOQUE C-4 v2 — Re-corrida con Driscoll Kraay y dos instrumentos anuales
 # ==============================================================================
 
-# install.packages(c("ivDiag","fixest","sandwich","lmtest","car"))
-# Nota: AER esta corrupta en esta instalacion (lazy-load). No se usa aqui.
+# Cambio estructural:
+#   - Principal pasa a DOS instrumentos anuales: ln_biomasa_sardina + ln_TAC_complejo.
+#   - Muestra recuperada: 427 obs, 16 plantas (sin filtro NA por SST_PUERTO_L1)
+#     y excluyendo 90073/2013.
+#   - Los ambientales SO_PUERTO / SST_PUERTO_L1 pasan de identificacion a
+#     resultado: F conjunto ~ 0,79 -> "no aportan poder identificador".
+#
+# ==============================================================================
+
 library(tidyverse)
-library(ivDiag)
 library(fixest)
 library(sandwich)
 library(lmtest)
 library(car)
 
 # ------------------------------------------------------------------------------
-# 0. PANEL CORREGIDO
+# 0. MUESTRA NUEVA — sin filtro NA por SST_PUERTO_L1
 # ------------------------------------------------------------------------------
 df <- read_csv(here::here("data", "panel_upgrade.csv"), show_col_types = FALSE) |>
   mutate(
@@ -20,267 +26,231 @@ df <- read_csv(here::here("data", "panel_upgrade.csv"), show_col_types = FALSE) 
     ln_P_complejo_real = log(P_complejo_real),
     period             = as.Date(sprintf("%04d-%02d-01", ANIO, MES))
   ) |>
-  filter(!is.na(SST_PUERTO_L1)) |>
+  # NO filtramos por SST_PUERTO_L1: recupera 16 obs y una planta
   group_by(NUI) |> filter(n() >= 2) |> ungroup() |>
   filter(!(NUI == "90073" & ANIO == 2013))
 
-stopifnot(nrow(df) == 410, length(unique(df$NUI)) == 15)
+cat("Muestra nueva (sin filtro SST_L1, sin 90073/2013):\n")
+cat(sprintf("  N = %d, G = %d plantas, T = %d meses\n",
+            nrow(df), length(unique(df$NUI)), length(unique(df$period))))
 
-.
-demean_por <- function(x, g)
-  x - ave(x, g, FUN = function(v) mean(v, na.rm = TRUE))
-
-dm <- df |>
-  mutate(
-    y   = demean_por(ln_P_complejo_real, NUI),
-    D   = demean_por(ln_h_complejo,      NUI),
-    z1  = demean_por(SO_PUERTO,          NUI),
-    z2  = demean_por(SST_PUERTO_L1,      NUI),
-    z3  = demean_por(ln_biomasa_sardina, NUI),
-    z4  = demean_por(ln_TAC_complejo,    NUI),
-    x1  = demean_por(ln_h_jurel,   NUI),
-    x2  = demean_por(SEASON_SIN,   NUI),
-    x3  = demean_por(SEASON_COS,   NUI),
-    x4  = demean_por(TENDENCIA,    NUI),
-    x5  = demean_por(ln_P_FOB,     NUI),
-    cl  = NUI,
-    per = period
-  ) |>
-  as.data.frame()
-
-# ==============================================================================
-# 1. F EFECTIVO DE MONTIEL OLEA-PFLUEGER (API oficial de ivDiag)
-# ==============================================================================
-
-
-# ivDiag::ivDiag() devuelve F_effective (Olea-Pflueger), F_stat (KP y otras),
-# AR, tF, IC AR y IC tF. Firma actual: (data, Y, D, Z, controls, cl, FE, ...)
-diag_out <- ivDiag::ivDiag(
-  data     = dm,
-  Y        = "y",
-  D        = "D",
-  Z        = c("z1", "z2", "z3", "z4"),
-  controls = c("x1", "x2", "x3", "x4", "x5"),
-  cl       = "cl",
-  bootstrap = FALSE
-)
-
-# ---- Diagnostico verboso del layout que devuelve tu ivDiag -----------------
-
-find_stat <- function(obj, patterns) {
-  if (is.null(obj)) return(NA_real_)
-  # Case 1: escalar numerico o vector sin nombres
-  if (is.numeric(obj) && is.null(names(obj)) && is.null(dim(obj))) {
-    return(as.numeric(obj)[1])
-  }
- 
-  if (is.numeric(obj) && !is.null(names(obj)) && is.null(dim(obj))) {
-    nm <- names(obj)
-    for (pat in patterns) {
-      hit <- grep(pat, nm, ignore.case = TRUE, value = TRUE)
-      if (length(hit) >= 1) return(as.numeric(obj[hit[1]]))
-    }
-    return(NA_real_)
-  }
-  
-  if (is.matrix(obj) || is.data.frame(obj)) {
-    rn <- rownames(obj); cn <- colnames(obj)
-    if (is.null(rn)) rn <- character(0)
-    if (is.null(cn)) cn <- character(0)
-    for (pat in patterns) {
-      hit <- grep(pat, rn, ignore.case = TRUE, value = TRUE)
-      if (length(hit) >= 1) {
-        v <- suppressWarnings(as.numeric(obj[hit[1], 1]))
-        if (!is.na(v)) return(v)
-      }
-      hit <- grep(pat, cn, ignore.case = TRUE, value = TRUE)
-      if (length(hit) >= 1) {
-        v <- suppressWarnings(as.numeric(obj[1, hit[1]]))
-        if (!is.na(v)) return(v)
-      }
-    }
-    return(NA_real_)
-  }
-  
-  if (is.list(obj)) {
-    nm <- names(obj); if (is.null(nm)) nm <- character(0)
-    for (pat in patterns) {
-      hit <- grep(pat, nm, ignore.case = TRUE, value = TRUE)
-      if (length(hit) >= 1) {
-        v <- suppressWarnings(as.numeric(unlist(obj[[hit[1]]]))[1])
-        if (!is.na(v)) return(v)
-      }
-    }
-    
-    for (el in obj) {
-      v <- find_stat(el, patterns)
-      if (!is.na(v)) return(v)
-    }
-  }
-  NA_real_
+#
+if (nrow(df) != 427 || length(unique(df$NUI)) != 16) {
+  cat("[nota] Muestra difiere de la esperada (427 obs, 16 plantas).\n")
+  cat("       Verificar filtro de contruccion en 01_panel_base.R.\n")
 }
 
-# Patrones ESTRICTOS (evitan que un pattern como "kp" caiga en AR_ci_bajo)
-PAT_KP  <- c("^F\\.klbg$", "^F_klbg$", "^F\\.KP$", "F\\.kleibergen",
-             "kleibergen")
-PAT_EFF <- c("^F\\.effective$", "^F_effective$", "^F\\.eff$", "^F_eff$",
-             "olea", "pflueger", "montiel")
-
-
-F_KP  <- find_stat(diag_out$F_stat, PAT_KP)
-F_eff <- find_stat(diag_out$F_stat, PAT_EFF)
-
-
-
-fs <- lm(D ~ z1 + z2 + z3 + z4 + x1 + x2 + x3 + x4 + x5, data = dm)
-zn <- c("z1","z2","z3","z4")
-pi_hat <- coef(fs)[zn]
-V_pi   <- sandwich::vcovCL(fs, cluster = dm$cl, type = "HC1")[zn, zn]
-
-# Residualizar Z (columnas z1..z4) sobre X (x1..x5) y constante
-Zresid <- lm(cbind(z1,z2,z3,z4) ~ x1 + x2 + x3 + x4 + x5, data = dm)$residuals
-ZrZr   <- crossprod(Zresid)
-K2     <- ncol(Zresid)
-
-num_eff <- as.numeric(t(pi_hat) %*% ZrZr %*% pi_hat)
-den_eff <- sum(diag(ZrZr %*% V_pi))
-F_eff_manual <- num_eff / den_eff
-
-# KP a mano: Wald cluster de pi = 0, dividido por K
-W_KP <- as.numeric(t(pi_hat) %*% solve(V_pi) %*% pi_hat)
-F_KP_manual <- W_KP / K2
-
-cat(sprintf("F efectivo Olea-Pflueger (manual, cluster planta) : %.3f\n",
-            F_eff_manual))
-cat(sprintf("F Kleibergen-Paap (manual, cluster planta)        : %.3f\n",
-            F_KP_manual))
-
-cat(sprintf("Umbral Olea-Pflueger 5%% (K=%d, TSLS)              : ~ 24\n", K2))
-
-
-if (!is.na(F_eff)) {
-  cat(sprintf("[cross-check] F_eff ivDiag = %.3f vs manual = %.3f\n",
-              F_eff, F_eff_manual))
-} else {
-  cat("[nota] ivDiag no expuso F.effective en $F_stat; se usa el manual.\n")
-  F_eff <- F_eff_manual
-}
-if (!is.na(F_KP)) {
-  cat(sprintf("[cross-check] F_KP ivDiag = %.3f vs manual = %.3f\n",
-              F_KP, F_KP_manual))
-} else {
-  cat("[nota] ivDiag no expuso F.klbg en $F_stat; se usa el manual.\n")
-  F_KP <- F_KP_manual
-}
-
-
-
 # ==============================================================================
-# 2. INTERVALO ANDERSON-RUBIN DE LA ESPECIFICACION PRINCIPAL
+# 1. ESPECIFICACION PRINCIPAL: DK, DOS INSTRUMENTOS ANUALES
 # ==============================================================================
+# Instrumentos: ln_biomasa_sardina + ln_TAC_complejo (los dos anuales).
+# Controles exogenos: ln_h_jurel, SEASON_SIN, SEASON_COS, TENDENCIA, ln_P_FOB.
 
-as_num1 <- function(x) {
-  if (is.null(x)) return(NA_real_)
-  v <- suppressWarnings(as.numeric(unlist(x, use.names = FALSE)))
-  v[is.finite(v)][1]
-}
-as_num2 <- function(x) {
-  if (is.null(x)) return(c(NA_real_, NA_real_))
-  v <- suppressWarnings(as.numeric(unlist(x, use.names = FALSE)))
-  if (length(v) < 2) return(c(NA_real_, NA_real_))
-  v[1:2]
-}
-
-AR_F   <- as_num1(diag_out$AR$F)
-AR_p   <- as_num1(diag_out$AR$pv)
-AR_ci  <- as_num2(diag_out$AR$ci)
-AR_bnd <- isTRUE(as.logical(diag_out$AR$bounded))
-
-cat("\n[debug] estructura de diag_out$AR:\n")
-str(diag_out$AR, max.level = 2)
-
-cat(sprintf("F AR (H0: gamma = 0) : %.3f\n", AR_F))
-cat(sprintf("p AR (H0: gamma = 0) : %.4f\n", AR_p))
-if (isTRUE(AR_bnd)) {
-  cat(sprintf("IC AR 95%%             : [%+.4f, %+.4f]\n",
-              AR_ci[1], AR_ci[2]))
-} else {
-  cat("IC AR 95%%             : no acotado (unbounded)\n")
-  cat("                        rango bajo: ", paste(AR_ci, collapse = " "), "\n")
-}
-cat("Este intervalo no depende del punto estimado; sobrevive a B-1.\n")
-
-# ==============================================================================
-# 3. WALD H0: theta = 1 <=> gamma = -1
-# ==============================================================================
 
 iv_DK <- feols(
   ln_P_complejo_real ~ ln_h_jurel + SEASON_SIN + SEASON_COS + TENDENCIA +
                        ln_P_FOB | NUI |
-    ln_h_complejo ~ SO_PUERTO + SST_PUERTO_L1 +
-                    ln_biomasa_sardina + ln_TAC_complejo,
+    ln_h_complejo ~ ln_biomasa_sardina + ln_TAC_complejo,
   data = df, vcov = DK(4) ~ period
 )
+
 iv_CP <- feols(
   ln_P_complejo_real ~ ln_h_jurel + SEASON_SIN + SEASON_COS + TENDENCIA +
                        ln_P_FOB | NUI |
-    ln_h_complejo ~ SO_PUERTO + SST_PUERTO_L1 +
-                    ln_biomasa_sardina + ln_TAC_complejo,
+    ln_h_complejo ~ ln_biomasa_sardina + ln_TAC_complejo,
   data = df, cluster = ~ NUI
 )
 
 nm_g <- if ("fit_ln_h_complejo" %in% names(coef(iv_DK)))
           "fit_ln_h_complejo" else "ln_h_complejo"
 
-# Preferimos DK como principal
-if (!is.na(as.numeric(coef(iv_DK)[nm_g]))) {
-  g_hat  <- as.numeric(coef(iv_DK)[nm_g])
-  g_se   <- as.numeric(se(iv_DK)[nm_g])
-  se_lab <- "Driscoll-Kraay bw=4"
-} else {
-  g_hat  <- as.numeric(coef(iv_CP)[nm_g])
-  g_se   <- as.numeric(se(iv_CP)[nm_g])
-  se_lab <- "cluster planta"
-  cat("(DK no calculable; se reporta cluster planta.)\n")
-}
+g_DK <- as.numeric(coef(iv_DK)[nm_g])
+s_DK <- as.numeric(se(iv_DK)[nm_g])
+p_DK <- as.numeric(pvalue(iv_DK)[nm_g])
+ic_DK <- g_DK + c(-1, 1) * qnorm(0.975) * s_DK
 
-t_stat <- (g_hat - (-1)) / g_se
-p_val  <- 2 * (1 - pnorm(abs(t_stat)))
+b_DK <- as.numeric(coef(iv_DK)["ln_P_FOB"])
+sb_DK <- as.numeric(se(iv_DK)["ln_P_FOB"])
 
-theta_hat <- -1 / g_hat
-theta_se  <- g_se / (g_hat^2)                      # delta method
-theta_ic  <- theta_hat + c(-1, 1) * qnorm(0.975) * theta_se
-
-
+cat(sprintf("gamma (DK bw=4)   : %+.4f   SE = %.4f   p = %.4f   IC = [%+.3f, %+.3f]\n",
+            g_DK, s_DK, p_DK, ic_DK[1], ic_DK[2]))
+cat(sprintf("beta_FOB (DK bw=4): %+.4f   SE = %.4f\n", b_DK, sb_DK))
 
 # ==============================================================================
-# 4. RESUMEN PARA EL MEMO
+# 2. F EFECTIVO OLEA PFLUEGER CON MATRIZ DK
+# ==============================================================================
+# Ahora K = 2 instrumentos. 
+# ==============================================================================
+cat("\n==============================================================\n")
+cat("2. F efectivo Olea-Pflueger con matriz DK y dos instrumentos\n")
+cat("==============================================================\n")
+
+# Primera etapa con feols para tener acceso a la VCV DK correcta
+fs <- feols(
+  ln_h_complejo ~ ln_biomasa_sardina + ln_TAC_complejo + ln_h_jurel +
+                  SEASON_SIN + SEASON_COS + TENDENCIA + ln_P_FOB | NUI,
+  data = df, vcov = DK(4) ~ period
+)
+
+zn     <- c("ln_biomasa_sardina", "ln_TAC_complejo")
+pi_hat <- as.numeric(coef(fs)[zn])
+V_pi   <- as.matrix(vcov(fs))[zn, zn]
+
+# Residualizar Z sobre controles + FE planta (Frisch-Waugh)
+demean_por <- function(x, g)
+  x - ave(x, g, FUN = function(v) mean(v, na.rm = TRUE))
+
+dm <- df |>
+  mutate(across(all_of(c(zn, "ln_h_jurel","SEASON_SIN","SEASON_COS",
+                         "TENDENCIA","ln_P_FOB")),
+                ~ demean_por(.x, NUI)))
+
+Zresid <- lm(as.formula(paste("cbind(", paste(zn, collapse=","), ") ~ ",
+                              "ln_h_jurel + SEASON_SIN + SEASON_COS + ",
+                              "TENDENCIA + ln_P_FOB")),
+             data = dm)$residuals
+ZrZr <- crossprod(Zresid)
+K2   <- ncol(Zresid)
+
+num_eff <- as.numeric(t(pi_hat) %*% ZrZr %*% pi_hat)
+den_eff <- sum(diag(ZrZr %*% V_pi))
+F_eff   <- num_eff / den_eff
+
+# KP con la misma matriz DK
+W_KP <- as.numeric(t(pi_hat) %*% solve(V_pi) %*% pi_hat)
+F_KP <- W_KP / K2
+
+cat(sprintf("F efectivo Olea-Pflueger (DK bw=4, K=%d) : %.3f\n", K2, F_eff))
+cat(sprintf("F Kleibergen-Paap (DK bw=4)              : %.3f\n", F_KP))
+cat("Umbral Olea-Pflueger 5%% (TSLS, K=2)     : aprox. 19,7\n")
+
+# ==============================================================================
+# 3. INTERVALO ANDERSON RUBIN CON MATRIZ DK
+# ==============================================================================
+
+ar_test_DK <- function(g0, df, zn) {
+  df$y_g <- df$ln_P_complejo_real - g0 * df$ln_h_complejo
+  m <- feols(
+    as.formula(paste("y_g ~",
+                     paste(c(zn, "ln_h_jurel","SEASON_SIN","SEASON_COS",
+                             "TENDENCIA","ln_P_FOB"), collapse=" + "),
+                     "| NUI")),
+    data = df, vcov = DK(4) ~ period
+  )
+  # Wald conjunto sobre los coeficientes de Z
+  w <- wald(m, keep = zn, print = FALSE)
+  c(F = as.numeric(w$stat), p = as.numeric(w$p))
+}
+
+# Grilla amplia
+grid <- seq(-2, 2, by = 0.005)
+ar_out <- t(sapply(grid, function(g0) ar_test_DK(g0, df, zn)))
+p_grid <- ar_out[, "p"]
+
+# IC 95%: gamma_0 tal que no rechazamos H0 al 5%
+acepta <- p_grid > 0.05
+if (any(acepta)) {
+  ar_ci <- range(grid[acepta])
+  cat(sprintf("IC AR 95%% (DK bw=4, K=%d) : [%+.4f, %+.4f]  (ancho %.3f)\n",
+              K2, ar_ci[1], ar_ci[2], diff(ar_ci)))
+} else {
+  ar_ci <- c(NA, NA)
+  cat("IC AR 95%%: vacio. Verificar especificacion.\n")
+}
+
+# F AR en gamma = 0
+f_ar_0 <- ar_test_DK(0, df, zn)
+cat(sprintf("F AR (H0: gamma = 0)      : %.3f   p = %.4f\n",
+            f_ar_0["F"], f_ar_0["p"]))
+
+# ==============================================================================
+# 4. SARGAN J
+# ==============================================================================
+cat("\n==============================================================\n")
+cat("4. Sargan-Hansen J\n")
+cat("==============================================================\n")
+
+sar <- fitstat(iv_DK, type = "sargan")
+cat(sprintf("Sargan J = %.3f   p = %.4f\n",
+            as.numeric(sar$sargan$stat),
+            as.numeric(sar$sargan$p)))
+
+# ==============================================================================
+# 5. WALD H0: beta_FOB = 1 (TRANSMISION PERFECTA)
+# ==============================================================================
+# Correccion Felipe: theta en la tesis es el coef del FOB, no -1/gamma.
+# Test: t = (beta_FOB - 1) / SE(beta_FOB) contra normal.
+# ==============================================================================
+cat("\n==============================================================\n")
+cat("5. Wald H0: beta_FOB = 1 (transmision perfecta del FOB)\n")
+cat("==============================================================\n")
+
+t_stat <- (b_DK - 1) / sb_DK
+p_val  <- 2 * (1 - pnorm(abs(t_stat)))
+
+cat(sprintf("beta_FOB (DK bw=4)        : %+.4f   SE = %.4f\n", b_DK, sb_DK))
+cat(sprintf("t Wald (H0: beta_FOB = 1) : %+.4f\n", t_stat))
+cat(sprintf("p (bilateral, normal)     : %.4f\n", p_val))
+cat("Interpretacion: si p < 0,05 rechazo transmision perfecta del FOB al precio local.\n")
+
+# ==============================================================================
+# 6. DIAGNOSTICO SOBRE AMBIENTALES (SO_PUERTO + SST_PUERTO_L1)
+# ==============================================================================
+# Felipe: "F conjunto de 0,79". Reproducir sobre esta muestra.
+# ==============================================================================
+cat("\n==============================================================\n")
+cat("6. Test de fuerza de los ambientales (SO + SST_L1) — hoy como resultado\n")
+cat("==============================================================\n")
+
+if (all(c("SO_PUERTO", "SST_PUERTO_L1") %in% names(df))) {
+  df_amb <- df |> filter(!is.na(SST_PUERTO_L1))
+  fs_amb <- feols(
+    ln_h_complejo ~ SO_PUERTO + SST_PUERTO_L1 + ln_biomasa_sardina +
+                    ln_TAC_complejo + ln_h_jurel + SEASON_SIN + SEASON_COS +
+                    TENDENCIA + ln_P_FOB | NUI,
+    data = df_amb, vcov = DK(4) ~ period
+  )
+  w_amb <- wald(fs_amb, keep = c("SO_PUERTO", "SST_PUERTO_L1"), print = FALSE)
+  cat(sprintf("F conjunto ambientales (DK) : %.3f   p = %.4f\n",
+              as.numeric(w_amb$stat), as.numeric(w_amb$p)))
+  cat("Lectura: si F < 5 aproximadamente, los ambientales no identifican por\n")
+  cat("si solos. En el paper pasan de identificacion a resultado.\n")
+} else {
+  cat("[skip] Faltan columnas SO_PUERTO o SST_PUERTO_L1.\n")
+}
+
+# ==============================================================================
+# 7. RESUMEN COMPACTO
 # ==============================================================================
 resumen <- tibble::tribble(
   ~item, ~valor,
-  "F efectivo Olea-Pflueger (cluster planta)",  round(F_eff, 4),
-  "F Kleibergen-Paap (referencia)",             round(F_KP,  4),
-  "AR F (H0: gamma=0)",                         round(AR_F,  4),
-  "AR p (H0: gamma=0)",                         round(AR_p,  4),
-  "AR IC 95% - bajo",                           round(AR_ci[1], 4),
-  "AR IC 95% - alto",                           round(AR_ci[2], 4),
-  "AR IC acotado (TRUE/FALSE)",                 as.numeric(isTRUE(AR_bnd)),
-  paste0("gamma principal (", se_lab, ")"),     round(g_hat, 4),
-  paste0("SE gamma principal (", se_lab, ")"),  round(g_se,  4),
-  "t Wald (H0: gamma=-1)",                      round(t_stat, 4),
-  "p Wald (H0: gamma=-1)",                      round(p_val,  4),
-  "theta implicita (-1/gamma)",                 round(theta_hat, 4),
-  "SE theta (delta)",                           round(theta_se,  4),
-  "IC 95% theta - bajo",                        round(theta_ic[1], 4),
-  "IC 95% theta - alto",                        round(theta_ic[2], 4)
+  "N muestra",                                    nrow(df),
+  "G plantas",                                    length(unique(df$NUI)),
+  "T meses",                                      length(unique(df$period)),
+  "gamma principal (DK bw=4)",                    round(g_DK, 4),
+  "SE gamma (DK)",                                round(s_DK, 4),
+  "p gamma (DK)",                                 round(p_DK, 4),
+  "IC 95% normal (DK) - bajo",                    round(ic_DK[1], 4),
+  "IC 95% normal (DK) - alto",                    round(ic_DK[2], 4),
+  "IC AR 95% (DK) - bajo",                        round(ar_ci[1], 4),
+  "IC AR 95% (DK) - alto",                        round(ar_ci[2], 4),
+  "Ancho IC AR",                                  round(diff(ar_ci), 4),
+  "F efectivo Olea-Pflueger (DK, K=2)",           round(F_eff, 4),
+  "F Kleibergen-Paap (DK)",                       round(F_KP,  4),
+  "F AR (H0: gamma = 0)",                         round(as.numeric(f_ar_0["F"]), 4),
+  "p AR",                                         round(as.numeric(f_ar_0["p"]), 4),
+  "Sargan J",                                     round(as.numeric(sar$sargan$stat), 4),
+  "Sargan p",                                     round(as.numeric(sar$sargan$p), 4),
+  "beta_FOB (DK)",                                round(b_DK,  4),
+  "SE beta_FOB (DK)",                             round(sb_DK, 4),
+  "t Wald (H0: beta_FOB = 1)",                    round(t_stat, 4),
+  "p Wald (H0: beta_FOB = 1)",                    round(p_val,  6)
 )
 
 dir.create(here::here("outputs", "reportes_intermedios"),
            showWarnings = FALSE, recursive = TRUE)
 write_csv(resumen,
           here::here("outputs", "reportes_intermedios",
-                     "C4_debiles_AR_Wald.csv"))
-
-cat("\nGuardado: outputs/reportes_intermedios/C4_debiles_AR_Wald.csv\n")
+                     "C4_v2_dos_instrumentos_DK.csv"))
+cat("\nGuardado: outputs/reportes_intermedios/C4_v2_dos_instrumentos_DK.csv\n")
 print(resumen, n = Inf, width = Inf)
-
