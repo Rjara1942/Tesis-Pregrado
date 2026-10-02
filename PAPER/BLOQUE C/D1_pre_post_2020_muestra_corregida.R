@@ -1,16 +1,7 @@
 # ==============================================================================
 # BLOQUE D-1 — Contraste pre/post 2020 sobre muestra corregida y set nuevo
 # ==============================================================================
-# Pauta Felipe 25 sep:
-#   Re-correr el contraste pre/post 2020 con la muestra corregida (sin
-#   90073/2013) y con el set nuevo de dos instrumentos anuales
-#   (ln_biomasa_sardina + ln_TAC_complejo). Es el que puede cambiar de signo
-#   porque las 8 filas de 90073 eran de 2013 y caian enteras en la mitad
-#   pre-2020.
-#
-# Numeros previos en conflicto: Felipe -0,327 vs. Ricardo -0,208 sobre la
-# muestra vieja. Aca resolvemos.
-# ==============================================================================
+# =========================================================
 
 library(tidyverse)
 library(fixest)
