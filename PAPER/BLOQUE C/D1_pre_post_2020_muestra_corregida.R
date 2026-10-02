@@ -39,9 +39,6 @@ formula_iv <-
 df_pre  <- df |> filter(POST2020 == 0)
 df_post <- df |> filter(POST2020 == 1)
 
-cat("==============================================================\n")
-cat("1. Pre 2020 (", nrow(df_pre), " obs)\n", sep="")
-cat("==============================================================\n")
 
 iv_pre <- feols(formula_iv, data = df_pre, vcov = DK(4) ~ period)
 nm_g <- if ("fit_ln_h_complejo" %in% names(coef(iv_pre)))
